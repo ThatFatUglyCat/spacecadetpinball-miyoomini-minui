@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 — Phase 3 video
+
+- Convert upstream vscreen `ColorRgba` → RGB565 for libretro
+- Center table framebuffer in a fixed 640×480 letterbox
+- Optional FPS overlay via `scp_show_fps` core option
+- Unit tests for palette/RGBA conversion and present centering
+
 ## 0.2.0 — Phase 2 engine link (no SDL)
 
 - SDL / SDL_mixer / ImGui shims under `include/shim/`

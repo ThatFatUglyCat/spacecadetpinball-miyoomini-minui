@@ -10,9 +10,9 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-Phase 2: upstream engine linked through SDL/ImGui shims (no real SDL). DAT
-validation, error screen, MinUI pak layout, and OnionOS-compatible control
-descriptors are in place. Next: RGB565 video (Phase 3) and input edges (Phase 4).
+Phase 3: engine linked (no real SDL) and vscreen presented as RGB565 at 640×480
+(centered). DAT validation, error screen, MinUI pak, and OnionOS-compatible
+control descriptors are in place. Next: input edges (Phase 4) and SFX (Phase 5).
 
 ## Quick start (developers)
 

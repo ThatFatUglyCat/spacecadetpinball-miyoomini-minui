@@ -15,10 +15,14 @@
 ```
 retro_run
   → input_poll / input_state
-  → game::step(fixed_dt)
-  → 8bpp + palette → RGB565 → video_cb
-  → mix SFX → audio_batch_cb
+  → game_step(fixed_dt)          // pb::frame
+  → vscreen ColorRgba → RGB565   // centered into 640x480
+  → video_cb
+  → mix SFX → audio_batch_cb     // Phase 5
 ```
+
+Upstream `render::vscreen` is typically 600×416 (resolution index 0). The core
+letterboxes it into the MinUI-native 640×480 RGB565 buffer.
 
 ## Upstream pin
 

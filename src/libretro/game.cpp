@@ -60,6 +60,8 @@ bool game_init(const GameConfig& cfg) {
   options::Options.ShowMenu = false;
   options::Options.Sounds = false;
   options::Options.Music = false;
+  // Force original 640x480 table geometry for MinUI (resolution index 0).
+  options::Options.Resolution = 0;
   options::InitPrimary();
 
   pb::BasePath = dirname_of(cfg.dat_path);
@@ -74,6 +76,7 @@ bool game_init(const GameConfig& cfg) {
   }
 
   options::InitSecondary();
+  fullscrn::SetResolution(0);
   Sound::Init(false, options::Options.SoundChannels, false, options::Options.SoundVolume);
   midi::music_init(false, options::Options.MusicVolume);
 

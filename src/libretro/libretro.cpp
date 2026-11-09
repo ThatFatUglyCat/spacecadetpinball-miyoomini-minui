@@ -6,6 +6,7 @@
 #include "game.h"
 #include "input.h"
 #include "log.h"
+#include "video.h"
 
 #include <cstdio>
 #include <cstring>
@@ -32,17 +33,30 @@ const char* get_dir(unsigned cmd) {
   return nullptr;
 }
 
+bool read_show_fps_option() {
+  if (!env_cb) return false;
+  struct retro_variable var = {"scp_show_fps", nullptr};
+  if (!env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) || !var.value) return false;
+  return std::strcmp(var.value, "enabled") == 0;
+}
+
 void present_frame() {
   if (!video_cb) return;
   if (frame_rgb565.size() != static_cast<std::size_t>(scp::kScreenW * scp::kScreenH))
     frame_rgb565.assign(static_cast<std::size_t>(scp::kScreenW * scp::kScreenH), 0);
 
+  scp::video_set_show_fps(read_show_fps_option());
+
   if (show_error) {
     scp::render_error_screen(frame_rgb565.data(), scp::kScreenW, error_message.c_str());
   } else if (scp::game_ready()) {
-    // Phase 3: convert 8bpp/RGBA -> RGB565. Until then, present black while
-    // the simulation advances (proves engine is linked).
-    std::memset(frame_rgb565.data(), 0, frame_rgb565.size() * sizeof(uint16_t));
+    const scp::FramebufferView view = scp::game_framebuffer();
+    if (!scp::present_framebuffer(view, frame_rgb565.data(), true)) {
+      std::memset(frame_rgb565.data(), 0, frame_rgb565.size() * sizeof(uint16_t));
+    } else {
+      scp::video_on_frame_presented();
+      scp::video_draw_fps_overlay(frame_rgb565.data());
+    }
   } else {
     std::memset(frame_rgb565.data(), 0, frame_rgb565.size() * sizeof(uint16_t));
   }
@@ -86,7 +100,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.2.0";
+  info->library_version = "0.3.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
