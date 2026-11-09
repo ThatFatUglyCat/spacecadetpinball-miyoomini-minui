@@ -1,0 +1,14 @@
+diff --git a/SpaceCadetPinball/TPlunger.cpp b/SpaceCadetPinball/TPlunger.cpp
+index 01bef73..5227144 100644
+--- a/SpaceCadetPinball/TPlunger.cpp
++++ b/SpaceCadetPinball/TPlunger.cpp
+@@ -127,7 +127,8 @@ int TPlunger::Message(MessageCode code, float value)
+ 			PullbackTimer_ = 0;
+ 			loader::play_sound(SoundIndexP2, this, "TPlunger3");
+ 			SpriteSet(0);
+-			timer::set(PullbackDelay, this, ReleasedTimer);
++			/* Miyoo candidate: 150ms post-release window (was PullbackDelay=25ms). */
++			timer::set(0.15f, this, ReleasedTimer);
+ 		}
+ 		break;
+ 	case MessageCode::Reset:

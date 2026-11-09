@@ -1,0 +1,2 @@
+# Paths (relative to repo root) allowed to exceed 2 MiB when tracked.
+# Keep empty unless a legitimate non-asset binary must be versioned.

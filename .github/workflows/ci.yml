@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-guards:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Proprietary asset guard
+        run: |
+          chmod +x tools/check-no-proprietary.sh tools/sdl-inventory.sh tools/package.sh
+          ./tools/check-no-proprietary.sh
+
+  host-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configure
+        run: cmake -S . -B build/host -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSCP_BUILD_TESTS=ON
+      - name: Build
+        run: cmake --build build/host -j$(nproc)
+      - name: Test
+        run: ctest --test-dir build/host --output-on-failure
+      - name: Package whitelist
+        run: |
+          chmod +x tools/package.sh
+          sudo apt-get update -qq && sudo apt-get install -y -qq zip
+          ./tools/package.sh build/host
+      - name: Upload pak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PINBALL-pak-host
+          path: dist/PINBALL.pak.zip

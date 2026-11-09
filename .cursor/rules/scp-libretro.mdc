@@ -1,0 +1,16 @@
+---
+description: Rules for the SpaceCadetPinball libretro (MinUI / Miyoo Mini) project
+alwaysApply: true
+---
+- NEVER add, generate, convert, or reference bytes of game assets (PINBALL.DAT, CADET.DAT, MIDI, sprites, sounds).
+  Test fixtures must be synthetic. If a task appears to require an asset, stop and ask.
+- The build MUST NOT read the DAT. The DAT is read only at runtime by the core from retro_game_info.path.
+- New code: C++11 (compatible with upstream), header "SPDX-License-Identifier: MIT", comments in English.
+- Do not modify third_party/SpaceCadetPinball directly; changes go in patches/NNNN-*.patch with a rationale.
+- No dynamic allocation, locks, I/O, or logs on the hot path of retro_run (except DEBUG-level log).
+- Export only retro_* symbols (hidden visibility by default).
+- Before opening a PR: run tools/check-no-proprietary.sh and unit/smoke tests.
+- Items marked [VERIFICAR] in IMPLEMENTATION_PLAN.md must be confirmed in code before implementing.
+- Default controls follow the OnionOS Miyoo Mini port map (shoulders = flippers, A/B = plunger,
+  D-pad = nudges / high scores, Start = pause, Select = new game). Do not reopen that map without
+  an explicit decision recorded in docs/.

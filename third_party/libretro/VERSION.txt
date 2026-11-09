@@ -1,0 +1,3 @@
+libretro.h copied from libretro/libretro-common
+include/libretro.h (master) on 2026-11-09
+Source: https://github.com/libretro/libretro-common

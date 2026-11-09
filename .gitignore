@@ -1,0 +1,52 @@
+# Build trees
+/build/
+/dist/
+/local/
+/.tools/
+*.o
+*.a
+*.so
+*.pak.zip
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+
+# Proprietary / user game data — never commit
+*.dat
+*.DAT
+*.mid
+*.MID
+*.midi
+*.MIDI
+*.sf2
+*.SF2
+*.wav
+*.WAV
+*.exe
+*.dll
+*.bin
+# Game data filenames only (do not ignore pak/PINBALL.pak/)
+PINBALL.DAT
+PINBALL.MID
+PINBALL.EXE
+CADET.DAT
+CADET.MID
+CADET.EXE
+**/PINBALL.DAT
+**/CADET.DAT
+
+# Local opt-in tests and dumps
+tests/local/**
+!tests/local/.gitkeep
+local/**
+
+# CMake / compiler
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+.cache/

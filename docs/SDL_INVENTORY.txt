@@ -1,0 +1,53 @@
+# SDL / Mix / ImGui inventory
+# Generated: 2026-11-09T15:08:22Z
+# Upstream: Release_2.1.0
+
+file                                       SDL_   Mix_  ImGui  imgui
+---------------------------------------- ------ ------ ------ ------
+DebugOverlay.cpp                             38      0      0      0
+Sound.cpp                                     0     16      0      0
+Sound.h                                       0      3      0      0
+TPinballTable.cpp                             2      0      0      0
+TTextBox.cpp                                  1      0     16     16
+TTextBox.h                                    0      0      1      1
+font_selection.cpp                            0      0     12     12
+fullscrn.cpp                                  6      0      0      0
+fullscrn.h                                    1      0      0      0
+gdrv.cpp                                     10      0      1      1
+gdrv.h                                        1      0      0      0
+high_score.cpp                                0      0     40     40
+imconfig.h                                    0      0     13     50
+imgui.cpp                                     0      0   2727   2950
+imgui.h                                       0      0   1027   1463
+imgui_demo.cpp                                0      0   3274   3484
+imgui_draw.cpp                                0      0    211    245
+imgui_impl_sdl.cpp                          133      0    231    244
+imgui_impl_sdl.h                             12      0     13     19
+imgui_impl_sdlrenderer.cpp                   37      0     36     42
+imgui_impl_sdlrenderer.h                      6      0      8     10
+imgui_internal.h                              0      0   1070   1270
+imgui_sdl.cpp                                57      0     19     21
+imgui_sdl.h                                   3      0      3      3
+imgui_tables.cpp                              0      0    678    696
+imgui_widgets.cpp                             0      0   1405   1436
+imstb_rectpack.h                              0      0      0      3
+imstb_textedit.h                              0      0      0      6
+imstb_truetype.h                              0      0      0      4
+loader.cpp                                    1      0      0      0
+loader.h                                      0      1      0      0
+midi.cpp                                      3     13      0      0
+midi.h                                        0      5      0      0
+options.cpp                                  17      0     44     44
+options.h                                     0      0      3      3
+pb.cpp                                        2      0      0      0
+pb.h                                          3      0      0      0
+pch.h                                         8      0     10     18
+render.cpp                                   16      0     11     11
+render.h                                      1      0      0      0
+translations.cpp                              0      0      1      1
+winmain.cpp                                  94      4    243    246
+winmain.h                                     6      0      3      3
+zdrv.cpp                                      5      0      0      0
+zdrv.h                                        1      0      0      0
+
+TOTAL                                       464     42  11100  12342
