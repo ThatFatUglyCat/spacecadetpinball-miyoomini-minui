@@ -15,7 +15,8 @@
 ```
 retro_run
   → input_poll / input_state
-  → game_step(fixed_dt)          // pb::frame
+  → translate edges → game_handle_input
+  → game_step(fixed_dt)          // pb::frame (skipped while paused)
   → vscreen ColorRgba → RGB565   // centered into 640x480
   → video_cb
   → mix SFX → audio_batch_cb     // Phase 5
@@ -23,6 +24,10 @@ retro_run
 
 Upstream `render::vscreen` is typically 600×416 (resolution index 0). The core
 letterboxes it into the MinUI-native 640×480 RGB565 buffer.
+
+Input: `input.cpp` ORs shoulder/face aliases, tracks hold state, and emits edges.
+Pause / high-scores block gameplay holds; releases (or re-press after unpause) stay
+in sync so flippers cannot stick. See `docs/INPUT_MAPPING.md`.
 
 ## Upstream pin
 

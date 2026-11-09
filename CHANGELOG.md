@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 — Phase 4 input
+
+- RetroPad → engine edges (flippers, plunger, nudges, pause, new game)
+- OnionOS aliases (L|L2, R|R2, A|B) and same-frame release on pause
+- Core options `scp_plunger_mode` (hold-release|tap) and `scp_nudge`
+- Unit tests for edge translation; `retro_reset` starts a new game
+
 ## 0.3.0 — Phase 3 video
 
 - Convert upstream vscreen `ColorRgba` → RGB565 for libretro

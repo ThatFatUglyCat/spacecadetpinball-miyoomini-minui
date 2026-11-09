@@ -155,6 +155,18 @@ if(SCP_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
     ${CMAKE_SOURCE_DIR}/third_party/libretro
   )
   add_test(NAME video_unit COMMAND scp_video_test)
+
+  # Edge translator only: stub game symbols so input.cpp links without the engine.
+  add_executable(scp_input_test
+    tests/unit/input_test.cpp
+    src/libretro/input.cpp
+    tests/unit/input_test_game_stubs.cpp
+  )
+  target_include_directories(scp_input_test PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/libretro
+    ${CMAKE_SOURCE_DIR}/third_party/libretro
+  )
+  add_test(NAME input_unit COMMAND scp_input_test)
 endif()
 
 install(TARGETS spacecadetpinball_libretro LIBRARY DESTINATION .)

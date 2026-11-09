@@ -10,9 +10,9 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-Phase 3: engine linked (no real SDL) and vscreen presented as RGB565 at 640×480
-(centered). DAT validation, error screen, MinUI pak, and OnionOS-compatible
-control descriptors are in place. Next: input edges (Phase 4) and SFX (Phase 5).
+Phase 4: engine linked (no real SDL), RGB565 video at 640×480, and OnionOS-compatible
+RetroPad input with press/release edges (flippers, plunger, nudges, pause, new game).
+Next: SFX mixer (Phase 5) and high-score persistence (Phase 6).
 
 ## Quick start (developers)
 

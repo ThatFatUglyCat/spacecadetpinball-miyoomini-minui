@@ -3,6 +3,8 @@
 
 namespace scp {
 
+struct InputEvent;
+
 struct GameConfig {
   const char* dat_path = nullptr;   // full path to PINBALL.DAT / CADET.DAT
   const char* system_dir = nullptr; // optional
@@ -13,6 +15,11 @@ bool game_init(const GameConfig& cfg);
 void game_step(float dt_ms);
 void game_shutdown();
 bool game_ready();
+
+// True when gameplay holds (flippers/plunger/nudge) must be suppressed.
+bool game_input_blocked();
+
+void game_handle_input(const InputEvent* events, int count);
 
 // Expose vscreen for Phase 3 video conversion.
 struct FramebufferView {

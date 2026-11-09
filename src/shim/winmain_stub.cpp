@@ -73,7 +73,26 @@ void winmain::pause(bool toggle) {
 
 void winmain::Restart() { restart = true; }
 void winmain::UpdateFrameRate() {}
-void winmain::HandleGameBinding(GameBindings, bool) {}
+
+void winmain::HandleGameBinding(GameBindings binding, bool) {
+  switch (binding) {
+    case GameBindings::TogglePause:
+      pause();
+      break;
+    case GameBindings::NewGame:
+      new_game();
+      break;
+    case GameBindings::ToggleSounds:
+      options::toggle(Menu1::Sounds);
+      break;
+    case GameBindings::ToggleMusic:
+      options::toggle(Menu1::Music);
+      break;
+    default:
+      break;
+  }
+}
+
 void winmain::RenderFrameTimeDialog() {}
 void winmain::HybridSleep(DurationMs) {}
 void winmain::ImGuiMenuItemWShortcut(GameBindings, bool) {}

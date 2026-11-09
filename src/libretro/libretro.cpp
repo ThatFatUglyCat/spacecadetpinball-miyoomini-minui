@@ -33,11 +33,18 @@ const char* get_dir(unsigned cmd) {
   return nullptr;
 }
 
-bool read_show_fps_option() {
-  if (!env_cb) return false;
-  struct retro_variable var = {"scp_show_fps", nullptr};
+bool read_bool_option(const char* key, const char* enabled_value) {
+  if (!env_cb || !key) return false;
+  struct retro_variable var = {key, nullptr};
   if (!env_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) || !var.value) return false;
-  return std::strcmp(var.value, "enabled") == 0;
+  return std::strcmp(var.value, enabled_value) == 0;
+}
+
+scp::InputOptions read_input_options() {
+  scp::InputOptions opts;
+  opts.plunger_tap = read_bool_option("scp_plunger_mode", "tap");
+  opts.nudge_enabled = !read_bool_option("scp_nudge", "disabled");
+  return opts;
 }
 
 void present_frame() {
@@ -45,7 +52,7 @@ void present_frame() {
   if (frame_rgb565.size() != static_cast<std::size_t>(scp::kScreenW * scp::kScreenH))
     frame_rgb565.assign(static_cast<std::size_t>(scp::kScreenW * scp::kScreenH), 0);
 
-  scp::video_set_show_fps(read_show_fps_option());
+  scp::video_set_show_fps(read_bool_option("scp_show_fps", "enabled"));
 
   if (show_error) {
     scp::render_error_screen(frame_rgb565.data(), scp::kScreenW, error_message.c_str());
@@ -100,7 +107,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.3.0";
+  info->library_version = "0.4.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
@@ -173,7 +180,7 @@ void retro_unload_game(void) {
 }
 
 void retro_run(void) {
-  scp::poll_input(input_poll_cb, input_state_cb);
+  scp::poll_input(input_poll_cb, input_state_cb, read_input_options());
   if (scp::game_ready() && !show_error)
     scp::game_step(1000.0f / 60.0f);
   present_frame();
@@ -185,8 +192,10 @@ void retro_run(void) {
 }
 
 void retro_reset(void) {
-  if (scp::game_ready())
-    scp::game_step(0);  // placeholder; Phase 6 calls new game
+  if (scp::game_ready()) {
+    scp::InputEvent ev{scp::InputEventKind::NewGame};
+    scp::game_handle_input(&ev, 1);
+  }
 }
 
 void retro_set_controller_port_device(unsigned, unsigned) {}

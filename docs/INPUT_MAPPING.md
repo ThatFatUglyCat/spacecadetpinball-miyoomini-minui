@@ -45,9 +45,16 @@ duplicate `bind` lines.
 ## Edge behaviour
 
 Flippers, plunger, and nudges use press/release edges (equivalent to upstream
-`InputDown` / `InputUp`). Key repeat is ignored for gameplay. If High Scores
-opens while a flipper is held, the flipper must still receive a release when
-the overlay closes.
+`InputDown` / `InputUp`). Key repeat is ignored for gameplay. If Pause or High
+Scores opens while a flipper is held, the core emits a release in the same
+frame; if the button is still held when gameplay unblocks, it re-presses.
+
+## Core options
+
+| Option | Values | Effect |
+|---|---|---|
+| `scp_plunger_mode` | `hold-release` (default), `tap` | Hold pulls back; tap fires Down+Up on press |
+| `scp_nudge` | `enabled` (default), `disabled` | Suppresses D-pad nudge edges when disabled |
 
 ## Source of truth
 
