@@ -1,7 +1,11 @@
 # Patches
 
-Patches are applied against `third_party/SpaceCadetPinball` at the pinned tag.
+Patches are applied against `third_party/SpaceCadetPinball` at the pinned tag
+by `cmake/patches.cmake` during configure.
 
-`0001-plunger-release-window.patch` is a **candidate**. Do not enable it in
-`cmake/patches.cmake` until Phase 2/4 playtesting shows missed fully-charged
-shots with the fixed 60 Hz step. Source: OnionOS Miyoo Mini port behaviour.
+| Patch | Status | Purpose |
+|---|---|---|
+| `0001-plunger-release-window.patch.candidate` | optional | 150ms plunger release window (rename to `*.patch` to enable) |
+| `0002-libretro-pch.patch` | required | `SCP_LIBRETRO` pch path using `include/shim` |
+
+`cmake/patches.cmake` applies every `patches/*.patch` at configure time.

@@ -31,6 +31,19 @@ Gate 2 (no residual SDL on `retro_run` path) remains open until Phase 2 stubs th
 
 Fallback: Option B (vendored fork) only if Phase 2 proves the shim surface too large.
 
+## Gate 2 — Phase 2 result (2026-11-09)
+
+**Passed with Option A.** Host core links the upstream engine through:
+
+- `include/shim/` (SDL2 / SDL_mixer / ImGui stubs)
+- `src/shim/winmain_stub.cpp` (no SDL main loop)
+- `src/libretro/game.cpp` (`game_init` / `game_step` / `game_shutdown`)
+- patch `0002-libretro-pch.patch`
+
+`readelf -d` on the host `.so` shows only `libstdc++`, `libm`, `libgcc_s`, `libc` — **no** libSDL2 / libSDL2_mixer.  
+`retro_run` advances `pb::frame` via the deterministic clock; video conversion is still Phase 3 (black frame until then).  
+Full DAT playtest with ASan remains local/opt-in (`SCP_DAT_PATH`).
+
 ## DAT magic
 
 Confirmed in `partman.cpp`:

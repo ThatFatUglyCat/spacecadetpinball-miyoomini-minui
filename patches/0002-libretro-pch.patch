@@ -1,0 +1,34 @@
+diff --git a/SpaceCadetPinball/pch.h b/SpaceCadetPinball/pch.h
+index a2cbcfe..3ceaefe 100644
+--- a/SpaceCadetPinball/pch.h
++++ b/SpaceCadetPinball/pch.h
+@@ -34,6 +34,21 @@
+ //#include <array>
+ 
+ #define SDL_MAIN_HANDLED
++#ifdef SCP_LIBRETRO
++#include <SDL.h>
++#include <SDL_mixer.h>
++#include <imgui.h>
++#include <imgui_internal.h>
++#include <imgui_impl_sdl.h>
++constexpr int MIX_INIT_MID_Proxy = MIX_INIT_MID;
++constexpr const char* ImGuiRender = "LIBRETRO";
++using std::isnan;
++using std::isinf;
++inline void ImGui_Render_Init(SDL_Renderer*) {}
++inline void ImGui_Render_Shutdown() {}
++inline void ImGui_Render_NewFrame() {}
++inline void ImGui_Render_RenderDrawData(ImDrawData*) {}
++#else
+ #include "SDL.h"
+ #include <SDL_mixer.h>
+ 
+@@ -68,6 +83,7 @@ inline void ImGui_Render_Shutdown() { ImGuiSDL::Deinitialize(); }
+ inline void ImGui_Render_NewFrame() { }
+ inline void ImGui_Render_RenderDrawData(ImDrawData* draw_data) { ImGuiSDL::Render(draw_data); }
+ #endif
++#endif // SCP_LIBRETRO
+ 
+ 
+ typedef char* LPSTR;

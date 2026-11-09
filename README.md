@@ -10,9 +10,9 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-Phase 0–1 scaffold: libretro skeleton, DAT validation, error screen, MinUI pak
-layout, CI guards, and OnionOS-compatible control descriptors. The game engine
-is not linked yet (Phase 2).
+Phase 2: upstream engine linked through SDL/ImGui shims (no real SDL). DAT
+validation, error screen, MinUI pak layout, and OnionOS-compatible control
+descriptors are in place. Next: RGB565 video (Phase 3) and input edges (Phase 4).
 
 ## Quick start (developers)
 

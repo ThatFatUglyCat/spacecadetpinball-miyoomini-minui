@@ -3,6 +3,7 @@
 
 #include "content.h"
 #include "errorscreen.h"
+#include "game.h"
 #include "input.h"
 #include "log.h"
 
@@ -20,20 +21,31 @@ retro_audio_sample_batch_t audio_batch_cb;
 retro_input_poll_t input_poll_cb;
 retro_input_state_t input_state_cb;
 
-bool game_ready = false;
 bool show_error = false;
 std::string error_message;
 std::vector<uint16_t> frame_rgb565;
 
-void present_error_or_black() {
+const char* get_dir(unsigned cmd) {
+  if (!env_cb) return nullptr;
+  const char* dir = nullptr;
+  if (env_cb(cmd, &dir) && dir && dir[0]) return dir;
+  return nullptr;
+}
+
+void present_frame() {
   if (!video_cb) return;
   if (frame_rgb565.size() != static_cast<std::size_t>(scp::kScreenW * scp::kScreenH))
     frame_rgb565.assign(static_cast<std::size_t>(scp::kScreenW * scp::kScreenH), 0);
 
-  if (show_error)
+  if (show_error) {
     scp::render_error_screen(frame_rgb565.data(), scp::kScreenW, error_message.c_str());
-  else
+  } else if (scp::game_ready()) {
+    // Phase 3: convert 8bpp/RGBA -> RGB565. Until then, present black while
+    // the simulation advances (proves engine is linked).
     std::memset(frame_rgb565.data(), 0, frame_rgb565.size() * sizeof(uint16_t));
+  } else {
+    std::memset(frame_rgb565.data(), 0, frame_rgb565.size() * sizeof(uint16_t));
+  }
 
   video_cb(frame_rgb565.data(), scp::kScreenW, scp::kScreenH, scp::kScreenW * sizeof(uint16_t));
 }
@@ -53,7 +65,6 @@ void retro_set_environment(retro_environment_t cb) {
 
   scp::register_input_descriptors(env_cb);
 
-  // Legacy SET_VARIABLES for minarch compatibility (placeholders until Phase 6).
   static const struct retro_variable vars[] = {
     {"scp_music", "Background Music; disabled|enabled"},
     {"scp_plunger_mode", "Plunger Mode; hold-release|tap"},
@@ -75,7 +86,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.1.0";
+  info->library_version = "0.2.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
@@ -94,13 +105,12 @@ void retro_get_system_av_info(struct retro_system_av_info* info) {
 
 void retro_init(void) {
   frame_rgb565.assign(static_cast<std::size_t>(scp::kScreenW * scp::kScreenH), 0);
-  game_ready = false;
   show_error = false;
   error_message.clear();
 }
 
 void retro_deinit(void) {
-  game_ready = false;
+  scp::game_shutdown();
   show_error = false;
   error_message.clear();
   frame_rgb565.clear();
@@ -113,7 +123,7 @@ bool retro_load_game(const struct retro_game_info* game) {
     return false;
   }
 
-  game_ready = false;
+  scp::game_shutdown();
   show_error = false;
   error_message.clear();
 
@@ -124,58 +134,56 @@ bool retro_load_game(const struct retro_game_info* game) {
     error_message = check.message;
     scp::log(RETRO_LOG_WARN, "Content check failed (%s): %s\n",
              scp::status_label(check.status), check.message.c_str());
-    // Stay loaded so minarch shows the help screen instead of a silent fail.
     return true;
   }
 
-  // Phase 2 will call scp::game::init(path, ...). Until then, keep the error
-  // screen stating that the game engine is not wired yet, while confirming DAT OK.
-  show_error = true;
-  error_message =
-      "DAT header OK.\nGame engine not linked yet (Phase 2).\n"
-      "Controls map is registered for MinUI.";
-  scp::log(RETRO_LOG_INFO, "Validated DAT at %s\n", path ? path : "(null)");
+  scp::GameConfig cfg;
+  cfg.dat_path = path;
+  cfg.system_dir = get_dir(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY);
+  cfg.save_dir = get_dir(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY);
+
+  if (!scp::game_init(cfg)) {
+    show_error = true;
+    error_message = "Failed to initialize the pinball engine.\nCheck the log for details.";
+    return true;
+  }
+
+  show_error = false;
   return true;
 }
 
 void retro_unload_game(void) {
-  game_ready = false;
+  scp::game_shutdown();
   show_error = false;
   error_message.clear();
 }
 
 void retro_run(void) {
   scp::poll_input(input_poll_cb, input_state_cb);
-  present_error_or_black();
-  // Phase 5: audio_batch_cb with sample_rate/fps silence or mixed SFX.
+  if (scp::game_ready() && !show_error)
+    scp::game_step(1000.0f / 60.0f);
+  present_frame();
   if (audio_batch_cb) {
-    int16_t silence[735 * 2];  // 44100/60
+    int16_t silence[735 * 2];
     std::memset(silence, 0, sizeof(silence));
     audio_batch_cb(silence, 735);
   }
 }
 
 void retro_reset(void) {
-  // Phase 6: new game.
+  if (scp::game_ready())
+    scp::game_step(0);  // placeholder; Phase 6 calls new game
 }
 
-void retro_set_controller_port_device(unsigned /*port*/, unsigned /*device*/) {}
-
+void retro_set_controller_port_device(unsigned, unsigned) {}
 unsigned retro_get_region(void) { return RETRO_REGION_NTSC; }
-
-bool retro_load_game_special(unsigned /*type*/, const struct retro_game_info* /*info*/,
-                             size_t /*num*/) {
-  return false;
-}
-
+bool retro_load_game_special(unsigned, const struct retro_game_info*, size_t) { return false; }
 size_t retro_serialize_size(void) { return 0; }
-bool retro_serialize(void* /*data*/, size_t /*size*/) { return false; }
-bool retro_unserialize(const void* /*data*/, size_t /*size*/) { return false; }
-
-void* retro_get_memory_data(unsigned /*id*/) { return nullptr; }
-size_t retro_get_memory_size(unsigned /*id*/) { return 0; }
-
+bool retro_serialize(void*, size_t) { return false; }
+bool retro_unserialize(const void*, size_t) { return false; }
+void* retro_get_memory_data(unsigned) { return nullptr; }
+size_t retro_get_memory_size(unsigned) { return 0; }
 void retro_cheat_reset(void) {}
-void retro_cheat_set(unsigned /*index*/, bool /*enabled*/, const char* /*code*/) {}
+void retro_cheat_set(unsigned, bool, const char*) {}
 
 }  // extern "C"

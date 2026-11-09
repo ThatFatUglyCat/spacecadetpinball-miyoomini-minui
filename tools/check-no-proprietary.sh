@@ -50,7 +50,8 @@ if git grep -Iq 'PARTOUT(4.0)RESOURCE' -- . \
     ':!docs/' \
     ':!third_party/' \
     ':!src/libretro/content.cpp' \
-    ':!src/libretro/content.h' 2>/dev/null; then
+    ':!src/libretro/content.h' \
+    ':!tests/unit/content_test.cpp' 2>/dev/null; then
   say "found DAT magic header in unexpected tracked file"
 fi
 
