@@ -33,6 +33,10 @@ Audio: upstream `Sound` / `loader` still load WAV paths beside the DAT. The `Mix
 shim in `audio.cpp` decodes PCM to mono S16 @ 44100 Hz, plays on N channels, and
 `audio_mix_frame` sums with saturation (no heap on the hot path). Music remains Phase 7.
 
+Persistence: `persist.cpp` exposes a 192-byte `SAVE_RAM` blob (`SCPH` + version + five
+name/score entries + CRC32). After `load_game`, the first `retro_run` imports into
+`high_score::highscore_table`; each frame re-exports so the frontend can write `.srm`.
+
 ## Upstream pin
 
 See `docs/PHASE0_FINDINGS.md` for the tagged commit and Gate 1 decision

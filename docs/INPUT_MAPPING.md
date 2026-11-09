@@ -17,7 +17,7 @@ Menu on MinUI opens `minarch`; it is never bound to a game action. Demo mode
 | Nudge Left | `LEFT` | D-pad Left | |
 | Nudge Right | `RIGHT` | D-pad Right | |
 | Nudge Bottom | `UP` | D-pad Up | Table bottom nudge |
-| High Scores | `DOWN` | D-pad Down | Overlay; pauses running game |
+| High Scores | `DOWN` | D-pad Down | Toggle overlay; pauses while open |
 | Toggle Sound | `X` | X | Effects on/off |
 | Toggle Music | `Y` | Y | No-op until music (Phase 7) |
 | Pause | `START` | Start | |

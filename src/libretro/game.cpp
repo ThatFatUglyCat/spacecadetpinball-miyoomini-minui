@@ -5,11 +5,13 @@
 #include "clock.h"
 #include "input.h"
 #include "log.h"
+#include "persist.h"
 
 #include "pch.h"
 #include "Sound.h"
 #include "TPinballTable.h"
 #include "fullscrn.h"
+#include "high_score.h"
 #include "midi.h"
 #include "nudge.h"
 #include "options.h"
@@ -20,12 +22,15 @@
 #include "SDL_mixer.h"
 
 #include <cctype>
+#include <cstring>
 #include <string>
 
 namespace scp {
 namespace {
 
 bool g_ready = false;
+bool g_hs_overlay = false;
+bool g_save_imported = false;
 
 std::string dirname_of(const char* path) {
   if (!path) return {};
@@ -102,12 +107,16 @@ bool game_init(const GameConfig& cfg) {
   pb::replay_level(false);
 
   g_ready = true;
+  g_hs_overlay = false;
+  g_save_imported = false;
   log(RETRO_LOG_INFO, "game_init OK (%s)\n", cfg.dat_path);
   return true;
 }
 
 void game_step(float dt_ms) {
   if (!g_ready) return;
+  // Commit any scores queued by pb::end_game (no ImGui dialog in libretro).
+  high_score::flush_pending();
   if (winmain::single_step) {
     clock_advance_ms(dt_ms);
     return;
@@ -118,6 +127,8 @@ void game_step(float dt_ms) {
 
 void game_shutdown() {
   if (g_ready) {
+    high_score::flush_pending();
+    save_ram_store(game_high_score_table());
     options::uninit();
     midi::music_shutdown();
     Sound::Close();
@@ -126,6 +137,8 @@ void game_shutdown() {
     fullscrn::shutdown();
   }
   g_ready = false;
+  g_hs_overlay = false;
+  g_save_imported = false;
   input_reset();
 
   if (winmain::Renderer) {
@@ -143,7 +156,45 @@ void game_shutdown() {
 bool game_ready() { return g_ready; }
 
 bool game_input_blocked() {
-  return !g_ready || winmain::single_step;
+  return !g_ready || winmain::single_step || g_hs_overlay;
+}
+
+bool game_high_scores_visible() { return g_hs_overlay; }
+
+void game_set_high_scores_visible(bool visible) {
+  g_hs_overlay = visible;
+  if (visible)
+    winmain::pause(false);
+}
+
+HighScoreTableView game_high_score_table() {
+  HighScoreTableView view{};
+  for (int i = 0; i < 5; ++i) {
+    std::memcpy(view.entries[i].name, high_score::highscore_table[i].Name, 32);
+    view.entries[i].name[31] = 0;
+    view.entries[i].score = high_score::highscore_table[i].Score;
+  }
+  return view;
+}
+
+void game_import_save_ram() {
+  if (!g_ready || g_save_imported) return;
+  HighScoreTableView view{};
+  if (save_ram_load(view)) {
+    for (int i = 0; i < 5; ++i) {
+      std::memcpy(high_score::highscore_table[i].Name, view.entries[i].name, 32);
+      high_score::highscore_table[i].Name[31] = 0;
+      high_score::highscore_table[i].Score = view.entries[i].score;
+    }
+    log(RETRO_LOG_INFO, "Loaded high scores from SAVE_RAM\n");
+  }
+  g_save_imported = true;
+}
+
+void game_export_save_ram() {
+  if (!g_ready) return;
+  high_score::flush_pending();
+  save_ram_store(game_high_score_table());
 }
 
 void game_handle_input(const InputEvent* events, int count) {
@@ -197,11 +248,15 @@ void game_handle_input(const InputEvent* events, int count) {
         winmain::pause();
         break;
       case InputEventKind::NewGame:
+        g_hs_overlay = false;
         winmain::new_game();
         break;
       case InputEventKind::HighScores:
-        winmain::pause(false);  // force pause while overlay is conceptually open
-        pb::high_scores();
+        g_hs_overlay = !g_hs_overlay;
+        if (g_hs_overlay)
+          winmain::pause(false);
+        else
+          winmain::end_pause();
         break;
       case InputEventKind::ToggleSound:
         options::toggle(Menu1::Sounds);

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0 — Phase 6 MVP
+
+- High scores in `RETRO_MEMORY_SAVE_RAM` (SCPH v1 + CRC32)
+- `high_score::flush_pending` patch commits scores without ImGui
+- D-pad Down toggles RGB565 high-score overlay
+- Core options labels polished; `retro_reset` = new game; clearer error/log text
+- Internal MVP milestone (pak + DAT + controls + SFX + persistent scores)
+
 ## 0.5.0 — Phase 5 SFX audio
 
 - Software mixer: N channels, saturated int16 stereo @ 44100 Hz

@@ -10,9 +10,8 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-Phase 5: engine linked (no real SDL), RGB565 video, OnionOS-compatible input, and an
-int16 stereo SFX mixer (WAV samples loaded at runtime next to the DAT). Next: high-score
-persistence and MVP polish (Phase 6).
+**MVP (0.6.0):** RGB565 video, OnionOS-compatible input, SFX mixer, and high scores in
+libretro SAVE_RAM. Optional MIDI music is Phase 7; save states are Phase 8.
 
 ## Quick start (developers)
 

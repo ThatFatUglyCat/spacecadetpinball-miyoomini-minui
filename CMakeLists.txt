@@ -88,6 +88,7 @@ add_library(spacecadetpinball_libretro SHARED
   src/libretro/game.cpp
   src/libretro/video.cpp
   src/libretro/audio.cpp
+  src/libretro/persist.cpp
   src/shim/sdl_shim.cpp
   src/shim/imgui_shim.cpp
   src/shim/winmain_stub.cpp
@@ -179,6 +180,16 @@ if(SCP_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
     ${CMAKE_SOURCE_DIR}/third_party/libretro
   )
   add_test(NAME audio_unit COMMAND scp_audio_test)
+
+  add_executable(scp_persist_test
+    tests/unit/persist_test.cpp
+    src/libretro/persist.cpp
+  )
+  target_include_directories(scp_persist_test PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/libretro
+    ${CMAKE_SOURCE_DIR}/third_party/libretro
+  )
+  add_test(NAME persist_unit COMMAND scp_persist_test)
 endif()
 
 install(TARGETS spacecadetpinball_libretro LIBRARY DESTINATION .)

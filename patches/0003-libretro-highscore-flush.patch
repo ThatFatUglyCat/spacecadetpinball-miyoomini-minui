@@ -1,0 +1,45 @@
+diff --git a/SpaceCadetPinball/high_score.cpp b/SpaceCadetPinball/high_score.cpp
+index 8afb519..035d9da 100644
+--- a/SpaceCadetPinball/high_score.cpp
++++ b/SpaceCadetPinball/high_score.cpp
+@@ -117,6 +117,27 @@ void high_score::show_and_set_high_score_dialog(high_score_entry score)
+ 	ShowDialog = true;
+ }
+ 
++void high_score::flush_pending()
++{
++	// Libretro has no ImGui name-entry dialog; commit queued scores with the
++	// names already filled by pb::end_game (player strings from resources).
++	while (!ScoreQueue.empty())
++	{
++		DlgData = ScoreQueue.back();
++		ScoreQueue.pop_back();
++		if (DlgData.Position < 0 || DlgData.Position > 4)
++		{
++			DlgData.Position = get_score_position(DlgData.Entry.Score);
++		}
++		if (DlgData.Position != -1)
++		{
++			place_new_score_into(DlgData);
++		}
++	}
++	ShowDialog = false;
++	dlg_enter_name = false;
++}
++
+ void high_score::RenderHighScoreDialog()
+ {
+ 	if (ShowDialog == true)
+diff --git a/SpaceCadetPinball/high_score.h b/SpaceCadetPinball/high_score.h
+index bd64330..c888825 100644
+--- a/SpaceCadetPinball/high_score.h
++++ b/SpaceCadetPinball/high_score.h
+@@ -25,6 +25,8 @@ public:
+ 	static void show_high_score_dialog();
+ 	static void show_and_set_high_score_dialog(high_score_entry score);
+ 	static void RenderHighScoreDialog();
++	// Commit ScoreQueue without ImGui (libretro / headless).
++	static void flush_pending();
+ private:
+ 	static bool dlg_enter_name;
+ 	static high_score_entry DlgData;

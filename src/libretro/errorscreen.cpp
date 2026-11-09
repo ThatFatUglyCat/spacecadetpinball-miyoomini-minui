@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 #include "errorscreen.h"
 
+#include "persist.h"
+
+#include <cstdio>
 #include <cstring>
 
 namespace scp {
@@ -107,10 +110,6 @@ const uint8_t kFont[96][7] = {
   {0x00,0x00,0x00,0x00,0x00,0x00,0x00},
 };
 
-inline uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
-  return static_cast<uint16_t>(((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));
-}
-
 void draw_char(uint16_t* dst, int pitch_px, int x, int y, char ch, uint16_t fg) {
   unsigned idx = 0;
   const unsigned uc = static_cast<unsigned char>(ch);
@@ -128,10 +127,12 @@ void draw_char(uint16_t* dst, int pitch_px, int x, int y, char ch, uint16_t fg) 
   }
 }
 
-void draw_text(uint16_t* dst, int pitch_px, int x, int y, const char* text, uint16_t fg) {
+}  // namespace
+
+void draw_text_rgb565(uint16_t* dst, int pitch_px, int x, int y, const char* text, uint16_t fg) {
   int cx = x;
   int cy = y;
-  for (const char* p = text; *p; ++p) {
+  for (const char* p = text; p && *p; ++p) {
     if (*p == '\n') {
       cx = x;
       cy += 10;
@@ -146,26 +147,56 @@ void draw_text(uint16_t* dst, int pitch_px, int x, int y, const char* text, uint
   }
 }
 
-}  // namespace
-
 void render_error_screen(uint16_t* dst, int pitch_px, const char* message) {
-  const uint16_t bg = rgb565(16, 16, 40);
-  const uint16_t fg = rgb565(240, 240, 240);
-  const uint16_t accent = rgb565(255, 200, 64);
+  const uint16_t bg = pack_rgb565(16, 16, 40);
+  const uint16_t fg = pack_rgb565(240, 240, 240);
+  const uint16_t accent = pack_rgb565(255, 200, 64);
 
   for (int y = 0; y < kScreenH; ++y) {
     uint16_t* row = dst + y * pitch_px;
     for (int x = 0; x < kScreenW; ++x) row[x] = bg;
   }
 
-  draw_text(dst, pitch_px, 24, 40, "Space Cadet Pinball (libretro)", accent);
-  draw_text(dst, pitch_px, 24, 60, "MinUI / Miyoo Mini", accent);
-  draw_text(dst, pitch_px, 24, 100, message ? message : "Unknown error", fg);
-  draw_text(dst, pitch_px, 24, 160,
-            "Put PINBALL.DAT in:\n  Roms/Space Cadet Pinball (PINBALL)/\n\n"
-            "Use your own legitimate game files.\n"
-            "See README.txt in the pak.",
-            fg);
+  draw_text_rgb565(dst, pitch_px, 24, 40, "Space Cadet Pinball (libretro)", accent);
+  draw_text_rgb565(dst, pitch_px, 24, 60, "MinUI / Miyoo Mini", accent);
+  draw_text_rgb565(dst, pitch_px, 24, 100, message ? message : "Unknown error", fg);
+  draw_text_rgb565(dst, pitch_px, 24, 160,
+                   "Put PINBALL.DAT in:\n  Roms/PINBALL/\n\n"
+                   "Keep WAV sound files next to the DAT.\n"
+                   "Use your own legitimate game files.\n"
+                   "See README.txt in the pak.",
+                   fg);
+}
+
+void render_high_score_overlay(uint16_t* dst, int pitch_px, const HighScoreTableView& table) {
+  if (!dst) return;
+  const uint16_t panel = pack_rgb565(8, 8, 24);
+  const uint16_t fg = pack_rgb565(240, 240, 240);
+  const uint16_t accent = pack_rgb565(255, 200, 64);
+
+  const int x0 = 80, y0 = 90, w = 480, h = 260;
+  for (int y = y0; y < y0 + h; ++y) {
+    if (y < 0 || y >= kScreenH) continue;
+    uint16_t* row = dst + y * pitch_px;
+    for (int x = x0; x < x0 + w; ++x) {
+      if (x >= 0 && x < kScreenW) row[x] = panel;
+    }
+  }
+
+  draw_text_rgb565(dst, pitch_px, x0 + 24, y0 + 16, "HIGH SCORES", accent);
+  draw_text_rgb565(dst, pitch_px, x0 + 24, y0 + 36, "D-pad Down to close", fg);
+
+  for (int i = 0; i < 5; ++i) {
+    char line[64];
+    const int32_t score = table.entries[i].score;
+    const char* name = table.entries[i].name;
+    if (!name[0] || score <= -999) {
+      std::snprintf(line, sizeof(line), "%d.  --------", i + 1);
+    } else {
+      std::snprintf(line, sizeof(line), "%d.  %-16s  %d", i + 1, name, static_cast<int>(score));
+    }
+    draw_text_rgb565(dst, pitch_px, x0 + 24, y0 + 70 + i * 28, line, fg);
+  }
 }
 
 }  // namespace scp

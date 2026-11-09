@@ -8,9 +8,11 @@ Install
 -------
 1. Copy PINBALL.pak to Emus/miyoomini/ on your MinUI SD card.
 2. Create folder:  Roms/Space Cadet Pinball (PINBALL)/
-3. Copy your legitimate PINBALL.DAT into that folder
-   (and optional PINBALL.MID / SOUND*.WAV beside it when the core supports them).
+3. Copy your legitimate PINBALL.DAT into that folder, plus the WAV sound files
+   that ship with the game (same directory as the DAT). Optional: PINBALL.MID
+   for music later (Phase 7).
 4. Refresh ROMs in MinUI and launch PINBALL.DAT.
+5. High scores persist via MinUI/libretro SAVE_RAM (.srm) automatically.
 
 Controls (defaults)
 -------------------

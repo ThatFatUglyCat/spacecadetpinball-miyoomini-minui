@@ -19,6 +19,17 @@ bool game_ready();
 // True when gameplay holds (flippers/plunger/nudge) must be suppressed.
 bool game_input_blocked();
 
+bool game_high_scores_visible();
+void game_set_high_scores_visible(bool visible);
+
+struct HighScoreTableView;
+HighScoreTableView game_high_score_table();
+
+// Import SAVE_RAM → engine table (call once after frontend fills SAVE_RAM).
+void game_import_save_ram();
+// Flush pending high-score queue and export table → SAVE_RAM.
+void game_export_save_ram();
+
 void game_handle_input(const InputEvent* events, int count);
 
 // Expose vscreen for Phase 3 video conversion.
