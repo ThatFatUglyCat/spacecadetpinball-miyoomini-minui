@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "game.h"
 
+#include "audio.h"
 #include "clock.h"
 #include "input.h"
 #include "log.h"
@@ -15,6 +16,8 @@
 #include "pb.h"
 #include "render.h"
 #include "winmain.h"
+
+#include "SDL_mixer.h"
 
 #include <cctype>
 #include <string>
@@ -62,7 +65,7 @@ bool game_init(const GameConfig& cfg) {
   winmain::Renderer = SDL_CreateRenderer(winmain::MainWindow, -1, 0);
 
   options::Options.ShowMenu = false;
-  options::Options.Sounds = false;
+  options::Options.Sounds = true;
   options::Options.Music = false;
   // Force original 640x480 table geometry for MinUI (resolution index 0).
   options::Options.Resolution = 0;
@@ -81,7 +84,10 @@ bool game_init(const GameConfig& cfg) {
 
   options::InitSecondary();
   fullscrn::SetResolution(0);
-  Sound::Init(false, options::Options.SoundChannels, false, options::Options.SoundVolume);
+
+  const bool mix_ok = Mix_OpenAudio(scp::kAudioSampleRate, MIX_DEFAULT_FORMAT, 2, 1024) == 0;
+  Sound::Init(mix_ok, options::Options.SoundChannels, options::Options.Sounds,
+              options::Options.SoundVolume);
   midi::music_init(false, options::Options.MusicVolume);
 
   if (pb::init() != 0) {
@@ -115,6 +121,7 @@ void game_shutdown() {
     options::uninit();
     midi::music_shutdown();
     Sound::Close();
+    Mix_CloseAudio();
     pb::uninit();
     fullscrn::shutdown();
   }

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 #include "SDL.h"
-#include "SDL_mixer.h"
 
 #include "clock.h"
 
@@ -134,30 +133,6 @@ SDL_RWops* SDL_RWFromFile(const char*, const char*) { return nullptr; }
 SDL_RWops* SDL_RWFromMem(void*, int) { return nullptr; }
 const char* SDL_GetKeyName(SDL_Keycode) { return ""; }
 
-int Mix_Init(int) { return 0; }
-void Mix_Quit(void) {}
-int Mix_OpenAudio(int, Uint16, int, int) { return -1; }
-void Mix_CloseAudio(void) {}
-int Mix_AllocateChannels(int) { return 0; }
-int Mix_Volume(int, int) { return 0; }
-int Mix_VolumeMusic(int) { return 0; }
-int Mix_PlayChannel(int, Mix_Chunk*, int) { return -1; }
-int Mix_HaltChannel(int) { return 0; }
-int Mix_Playing(int) { return 0; }
-void Mix_Pause(int) {}
-void Mix_Resume(int) {}
-int Mix_SetPosition(int, Sint16, Uint8) { return 0; }
-Mix_Chunk* Mix_LoadWAV(const char*) { return nullptr; }
-Mix_Chunk* Mix_LoadWAV_RW(SDL_RWops*, int) { return nullptr; }
-void Mix_FreeChunk(Mix_Chunk* chunk) { delete chunk; }
-Mix_Music* Mix_LoadMUS(const char*) { return nullptr; }
-Mix_Music* Mix_LoadMUS_RW(SDL_RWops*, int) { return nullptr; }
-void Mix_FreeMusic(Mix_Music*) {}
-int Mix_PlayMusic(Mix_Music*, int) { return -1; }
-int Mix_HaltMusic(void) { return 0; }
-int Mix_PausedMusic(void) { return 0; }
-void Mix_PauseMusic(void) {}
-void Mix_ResumeMusic(void) {}
-int Mix_PlayingMusic(void) { return 0; }
+// Mix_* implementations live in src/libretro/audio.cpp (SFX mixer).
 
 }  // extern "C"

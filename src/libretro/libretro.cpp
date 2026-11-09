@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 #include "libretro.h"
 
+#include "audio.h"
 #include "content.h"
 #include "errorscreen.h"
 #include "game.h"
@@ -107,7 +108,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.4.0";
+  info->library_version = "0.5.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
@@ -120,8 +121,8 @@ void retro_get_system_av_info(struct retro_system_av_info* info) {
   info->geometry.max_width = scp::kScreenW;
   info->geometry.max_height = scp::kScreenH;
   info->geometry.aspect_ratio = 4.0f / 3.0f;
-  info->timing.fps = 60.0;
-  info->timing.sample_rate = 44100.0;
+  info->timing.fps = static_cast<double>(scp::kAudioFps);
+  info->timing.sample_rate = static_cast<double>(scp::kAudioSampleRate);
 }
 
 void retro_init(void) {
@@ -182,12 +183,14 @@ void retro_unload_game(void) {
 void retro_run(void) {
   scp::poll_input(input_poll_cb, input_state_cb, read_input_options());
   if (scp::game_ready() && !show_error)
-    scp::game_step(1000.0f / 60.0f);
+    scp::game_step(1000.0f / static_cast<float>(scp::kAudioFps));
   present_frame();
   if (audio_batch_cb) {
-    int16_t silence[735 * 2];
-    std::memset(silence, 0, sizeof(silence));
-    audio_batch_cb(silence, 735);
+    int16_t pcm[scp::kAudioMaxFramesPerVideoFrame * 2];
+    const std::size_t frames =
+        scp::audio_mix_frame(pcm, scp::kAudioMaxFramesPerVideoFrame);
+    if (frames > 0)
+      audio_batch_cb(pcm, frames);
   }
 }
 

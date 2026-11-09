@@ -87,6 +87,7 @@ add_library(spacecadetpinball_libretro SHARED
   src/libretro/clock.cpp
   src/libretro/game.cpp
   src/libretro/video.cpp
+  src/libretro/audio.cpp
   src/shim/sdl_shim.cpp
   src/shim/imgui_shim.cpp
   src/shim/winmain_stub.cpp
@@ -167,6 +168,17 @@ if(SCP_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
     ${CMAKE_SOURCE_DIR}/third_party/libretro
   )
   add_test(NAME input_unit COMMAND scp_input_test)
+
+  add_executable(scp_audio_test
+    tests/unit/audio_test.cpp
+    src/libretro/audio.cpp
+  )
+  target_include_directories(scp_audio_test PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/libretro
+    ${CMAKE_SOURCE_DIR}/include/shim
+    ${CMAKE_SOURCE_DIR}/third_party/libretro
+  )
+  add_test(NAME audio_unit COMMAND scp_audio_test)
 endif()
 
 install(TARGETS spacecadetpinball_libretro LIBRARY DESTINATION .)

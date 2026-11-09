@@ -10,9 +10,9 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-Phase 4: engine linked (no real SDL), RGB565 video at 640×480, and OnionOS-compatible
-RetroPad input with press/release edges (flippers, plunger, nudges, pause, new game).
-Next: SFX mixer (Phase 5) and high-score persistence (Phase 6).
+Phase 5: engine linked (no real SDL), RGB565 video, OnionOS-compatible input, and an
+int16 stereo SFX mixer (WAV samples loaded at runtime next to the DAT). Next: high-score
+persistence and MVP polish (Phase 6).
 
 ## Quick start (developers)
 

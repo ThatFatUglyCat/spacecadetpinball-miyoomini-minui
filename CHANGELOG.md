@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 — Phase 5 SFX audio
+
+- Software mixer: N channels, saturated int16 stereo @ 44100 Hz
+- `Mix_*` shim loads PCM WAVs (next to the DAT) and feeds the mixer
+- Fixed-step frames with fractional remainder; `audio_batch_cb` each `retro_run`
+- Unit tests for frame remainder and mix saturation
+
 ## 0.4.0 — Phase 4 input
 
 - RetroPad → engine edges (flippers, plunger, nudges, pause, new game)
