@@ -65,7 +65,10 @@ jobs:
       - name: Cross-compile, ELF check, package
         run: |
           chmod +x project/tools/package.sh project/tools/check-miyoomini-elf.sh
+          # Rename inside the container: Docker runs as root and creates
+          # project/dist owned by root, so a host-side cp into that dir fails.
           docker run --rm \
+            -e "GITHUB_REF_NAME=${GITHUB_REF_NAME}" \
             -v "$GITHUB_WORKSPACE/project:/root/workspace" \
             miyoomini-toolchain \
             /bin/bash -lc '
@@ -89,9 +92,9 @@ jobs:
               fi
               ./tools/check-miyoomini-elf.sh "$SO"
               ./tools/package.sh build/miyoomini
+              cp dist/PINBALL.pak.zip \
+                "dist/PINBALL.pak-miyoomini-${GITHUB_REF_NAME}.zip"
             '
-          cp project/dist/PINBALL.pak.zip \
-            "project/dist/PINBALL.pak-miyoomini-${GITHUB_REF_NAME}.zip"
 
       - name: Upload miyoomini pak
         uses: actions/upload-artifact@v4
