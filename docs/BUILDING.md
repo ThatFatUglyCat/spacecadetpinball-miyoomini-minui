@@ -2,7 +2,8 @@
 
 ## Prerequisites
 
-- CMake ≥ 3.16, a C++11 compiler (GCC/Clang)
+- CMake ≥ 3.13, a C++11 compiler (GCC/Clang). The pinned
+  `union-miyoomini-toolchain` Docker image ships CMake 3.13.4.
 - Git with submodules
 - For Miyoo Mini: Docker +
   [union-miyoomini-toolchain](https://github.com/shauninman/union-miyoomini-toolchain)

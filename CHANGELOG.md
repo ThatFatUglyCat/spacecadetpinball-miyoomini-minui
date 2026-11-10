@@ -1,13 +1,16 @@
 # Changelog
 
-## Unreleased
+## 1.0.2
 
 - Release / CI publish **both** device and desktop paks on tag `v*`:
   `PINBALL.pak-miyoomini-*.zip` (ARM ELF32 via pinned `union-miyoomini-toolchain`)
   and `PINBALL.pak-host-*.zip` (x86_64), with a combined `SHA256SUMS`
 - `tools/check-miyoomini-elf.sh` rejects non-ARM32 cores and dynamic
   `libstdc++` / `libgcc_s` before packaging
+- Lower `cmake_minimum_required` to 3.13 so the Miyoo toolchain container
+  (CMake 3.13.4) can configure; host CI is unchanged
 - User guide points players at the **miyoomini** zip; host zip is for desktop only
+- Note: tag `v1.0.1` existed but the miyoomini job failed on CMake 3.16; use `v1.0.2`
 
 ## 1.0.0 — Phase 9 polish & release
 
@@ -15,7 +18,7 @@
   `BUILDING`, `LEGAL`, `PERFORMANCE`, plus existing architecture/input/music docs
 - `THIRD_PARTY_LICENSES.md` reviewed; SPDX MIT on all `src/` files
 - Release workflow on tag `v*`: host build, whitelist pak zip, `SHA256SUMS`, notes
-  (Miyoo cross-build remained manual in this tag — see later Unreleased notes)
+  (Miyoo cross-build in CI landed in 1.0.2)
 - Core `library_version` → `1.0.0`
 - On-device frame-time profiling left to maintainers with hardware
   (`docs/PERFORMANCE.md`); no further code changes required for acceptance docs

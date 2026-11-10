@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: MIT
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.13)
 project(spacecadetpinball_libretro LANGUAGES CXX VERSION 1.0.0)
 
 option(SCP_ENABLE_MUSIC "Build optional MIDI music support" OFF)
