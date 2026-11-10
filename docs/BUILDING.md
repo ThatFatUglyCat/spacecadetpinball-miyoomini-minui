@@ -46,7 +46,8 @@ cmake -S . -B build/miyoomini \
   -DCMAKE_TOOLCHAIN_FILE=cmake/miyoomini.toolchain.cmake \
   -DCMAKE_BUILD_TYPE=Release
 # optional: -DSCP_ENABLE_MUSIC=ON
-cmake --build build/miyoomini -j
+# CMake 3.13 in the toolchain image rejects glued -jN; use --parallel N.
+cmake --build build/miyoomini --parallel "$(nproc)"
 ./tools/check-miyoomini-elf.sh build/miyoomini/spacecadetpinball_libretro.so
 ./tools/package.sh build/miyoomini
 ```

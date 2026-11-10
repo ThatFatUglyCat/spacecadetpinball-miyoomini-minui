@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+
+- Miyoo CI/release: `cmake --build --parallel N` (CMake 3.13 rejects glued `-jN`)
+
 ## 1.0.2
 
 - Release / CI publish **both** device and desktop paks on tag `v*`:
@@ -10,7 +14,8 @@
 - Lower `cmake_minimum_required` to 3.13 so the Miyoo toolchain container
   (CMake 3.13.4) can configure; host CI is unchanged
 - User guide points players at the **miyoomini** zip; host zip is for desktop only
-- Note: tag `v1.0.1` existed but the miyoomini job failed on CMake 3.16; use `v1.0.2`
+- Note: tags `v1.0.1` / `v1.0.2` hit toolchain CMake quirks; use `v1.0.3` for the
+  first successful miyoomini release asset
 
 ## 1.0.0 — Phase 9 polish & release
 

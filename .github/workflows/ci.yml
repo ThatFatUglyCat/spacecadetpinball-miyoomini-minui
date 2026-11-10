@@ -80,7 +80,8 @@ jobs:
               cmake -S . -B build/miyoomini \
                 -DCMAKE_TOOLCHAIN_FILE=cmake/miyoomini.toolchain.cmake \
                 -DCMAKE_BUILD_TYPE=Release
-              cmake --build build/miyoomini -j"$(nproc)"
+              # CMake 3.13 rejects glued -jN; use --parallel with a separate arg.
+              cmake --build build/miyoomini --parallel "$(nproc)"
               SO=""
               for cand in build/miyoomini/spacecadetpinball_libretro.so \
                           build/miyoomini/libspacecadetpinball_libretro.so; do
