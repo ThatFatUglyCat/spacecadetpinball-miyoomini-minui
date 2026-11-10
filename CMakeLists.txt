@@ -88,6 +88,7 @@ add_library(spacecadetpinball_libretro SHARED
   src/libretro/game.cpp
   src/libretro/video.cpp
   src/libretro/audio.cpp
+  src/libretro/music.cpp
   src/libretro/persist.cpp
   src/shim/sdl_shim.cpp
   src/shim/imgui_shim.cpp
@@ -95,6 +96,16 @@ add_library(spacecadetpinball_libretro SHARED
   src/shim/debug_overlay_stub.cpp
   ${SCP_UPSTREAM_SOURCES}
 )
+
+if(SCP_ENABLE_MUSIC)
+  target_compile_definitions(spacecadetpinball_libretro PRIVATE SCP_ENABLE_MUSIC=1)
+  target_include_directories(spacecadetpinball_libretro PRIVATE
+    ${CMAKE_SOURCE_DIR}/third_party/tinysoundfont
+  )
+  message(STATUS "SCP_ENABLE_MUSIC=ON (TinySoundFont + TinyMidiLoader)")
+else()
+  message(STATUS "SCP_ENABLE_MUSIC=OFF (MIDI stubs; SFX only)")
+endif()
 
 set_target_properties(spacecadetpinball_libretro PROPERTIES
   OUTPUT_NAME "spacecadetpinball_libretro"
@@ -173,6 +184,10 @@ if(SCP_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
   add_executable(scp_audio_test
     tests/unit/audio_test.cpp
     src/libretro/audio.cpp
+    src/libretro/music.cpp
+    src/shim/sdl_shim.cpp
+    src/libretro/clock.cpp
+    src/libretro/log.cpp
   )
   target_include_directories(scp_audio_test PRIVATE
     ${CMAKE_SOURCE_DIR}/src/libretro
@@ -180,6 +195,15 @@ if(SCP_BUILD_TESTS AND NOT CMAKE_CROSSCOMPILING)
     ${CMAKE_SOURCE_DIR}/third_party/libretro
   )
   add_test(NAME audio_unit COMMAND scp_audio_test)
+
+  add_executable(scp_music_test tests/unit/music_test.cpp src/libretro/music.cpp
+                 src/shim/sdl_shim.cpp src/libretro/clock.cpp src/libretro/log.cpp)
+  target_include_directories(scp_music_test PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/libretro
+    ${CMAKE_SOURCE_DIR}/include/shim
+    ${CMAKE_SOURCE_DIR}/third_party/libretro
+  )
+  add_test(NAME music_unit COMMAND scp_music_test)
 
   add_executable(scp_persist_test
     tests/unit/persist_test.cpp

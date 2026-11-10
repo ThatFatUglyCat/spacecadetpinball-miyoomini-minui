@@ -3,6 +3,7 @@
 
 #include "clock.h"
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <map>
@@ -129,10 +130,75 @@ const Uint8* SDL_GetKeyboardState(int* numkeys) {
 }
 
 int SDL_ShowSimpleMessageBox(Uint32, const char*, const char*, SDL_Window*) { return 0; }
-SDL_RWops* SDL_RWFromFile(const char*, const char*) { return nullptr; }
-SDL_RWops* SDL_RWFromMem(void*, int) { return nullptr; }
+
+SDL_RWops* SDL_RWFromFile(const char* file, const char* mode) {
+  if (!file) return nullptr;
+  FILE* fp = std::fopen(file, mode ? mode : "rb");
+  if (!fp) return nullptr;
+  auto* rw = new SDL_RWops();
+  std::memset(rw, 0, sizeof(*rw));
+  rw->kind = 0;
+  rw->handle = fp;
+  return rw;
+}
+
+SDL_RWops* SDL_RWFromMem(void* mem, int size) {
+  if (!mem || size <= 0) return nullptr;
+  auto* rw = new SDL_RWops();
+  std::memset(rw, 0, sizeof(*rw));
+  rw->kind = 1;
+  rw->base = static_cast<const Uint8*>(mem);
+  rw->here = rw->base;
+  rw->stop = rw->base + size;
+  return rw;
+}
+
 const char* SDL_GetKeyName(SDL_Keycode) { return ""; }
 
-// Mix_* implementations live in src/libretro/audio.cpp (SFX mixer).
+int scp_rwops_close(SDL_RWops* rw) {
+  if (!rw) return -1;
+  if (rw->kind == 0 && rw->handle) {
+    std::fclose(static_cast<FILE*>(rw->handle));
+    rw->handle = nullptr;
+  }
+  delete rw;
+  return 0;
+}
+
+int scp_rwops_read_all(SDL_RWops* rw, void** out_buf, std::size_t* out_size) {
+  if (!rw || !out_buf || !out_size) return -1;
+  *out_buf = nullptr;
+  *out_size = 0;
+  if (rw->kind == 1) {
+    const std::size_t n = static_cast<std::size_t>(rw->stop - rw->base);
+    void* buf = std::malloc(n);
+    if (!buf) return -1;
+    std::memcpy(buf, rw->base, n);
+    *out_buf = buf;
+    *out_size = n;
+    return 0;
+  }
+  if (rw->kind == 0 && rw->handle) {
+    FILE* fp = static_cast<FILE*>(rw->handle);
+    if (std::fseek(fp, 0, SEEK_END) != 0) return -1;
+    long sz = std::ftell(fp);
+    if (sz < 0) return -1;
+    if (std::fseek(fp, 0, SEEK_SET) != 0) return -1;
+    void* buf = std::malloc(static_cast<std::size_t>(sz));
+    if (!buf) return -1;
+    if (sz > 0 &&
+        std::fread(buf, 1, static_cast<std::size_t>(sz), fp) !=
+            static_cast<std::size_t>(sz)) {
+      std::free(buf);
+      return -1;
+    }
+    *out_buf = buf;
+    *out_size = static_cast<std::size_t>(sz);
+    return 0;
+  }
+  return -1;
+}
+
+// Mix_* (SFX) live in audio.cpp; Mix_* (music) live in music.cpp.
 
 }  // extern "C"

@@ -2,6 +2,7 @@
 #include "audio.h"
 
 #include "SDL_mixer.h"
+#include "music.h"
 
 #include <algorithm>
 #include <cmath>
@@ -267,6 +268,9 @@ std::size_t audio_mix_frame(int16_t* dst_interleaved, std::size_t max_frames) {
     dst_interleaved[f * 2 + 1] = saturate_i32(mix_r);
   }
 
+  // Additive music bed (no-op if SCP_ENABLE_MUSIC is off or no SF2/track).
+  music_mix_into(dst_interleaved, static_cast<std::size_t>(frames));
+
   return static_cast<std::size_t>(frames);
 }
 
@@ -310,8 +314,6 @@ int Mix_Volume(int channel, int volume) {
   }
   return 0;
 }
-
-int Mix_VolumeMusic(int volume) { return volume; }
 
 int Mix_PlayChannel(int channel, Mix_Chunk* chunk, int) {
   if (!scp::audio_ready() || !g_enabled || !chunk || !chunk->abuf || chunk->alen < 2)
@@ -397,14 +399,6 @@ void Mix_FreeChunk(Mix_Chunk* chunk) {
   delete chunk;
 }
 
-Mix_Music* Mix_LoadMUS(const char*) { return nullptr; }
-Mix_Music* Mix_LoadMUS_RW(SDL_RWops*, int) { return nullptr; }
-void Mix_FreeMusic(Mix_Music*) {}
-int Mix_PlayMusic(Mix_Music*, int) { return -1; }
-int Mix_HaltMusic(void) { return 0; }
-int Mix_PausedMusic(void) { return 0; }
-void Mix_PauseMusic(void) {}
-void Mix_ResumeMusic(void) {}
-int Mix_PlayingMusic(void) { return 0; }
+// Mix_Music* APIs are implemented in music.cpp.
 
 }  // extern "C"

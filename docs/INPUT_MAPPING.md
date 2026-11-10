@@ -19,7 +19,7 @@ Menu on MinUI opens `minarch`; it is never bound to a game action. Demo mode
 | Nudge Bottom | `UP` | D-pad Up | Table bottom nudge |
 | High Scores | `DOWN` | D-pad Down | Toggle overlay; pauses while open |
 | Toggle Sound | `X` | X | Effects on/off |
-| Toggle Music | `Y` | Y | No-op until music (Phase 7) |
+| Toggle Music | `Y` | Y | Requires `SCP_ENABLE_MUSIC` + user SF2 |
 | Pause | `START` | Start | |
 | New Game | `SELECT` | Select | |
 

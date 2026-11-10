@@ -5,6 +5,7 @@
 #include "clock.h"
 #include "input.h"
 #include "log.h"
+#include "music.h"
 #include "persist.h"
 
 #include "pch.h"
@@ -71,7 +72,7 @@ bool game_init(const GameConfig& cfg) {
 
   options::Options.ShowMenu = false;
   options::Options.Sounds = true;
-  options::Options.Music = false;
+  options::Options.Music = cfg.music_enabled;
   // Force original 640x480 table geometry for MinUI (resolution index 0).
   options::Options.Resolution = 0;
   options::InitPrimary();
@@ -93,7 +94,13 @@ bool game_init(const GameConfig& cfg) {
   const bool mix_ok = Mix_OpenAudio(scp::kAudioSampleRate, MIX_DEFAULT_FORMAT, 2, 1024) == 0;
   Sound::Init(mix_ok, options::Options.SoundChannels, options::Options.Sounds,
               options::Options.SoundVolume);
-  midi::music_init(false, options::Options.MusicVolume);
+  music_set_system_dir(cfg.system_dir);
+  // Upstream midi.cpp loads PINBALL.MID via Mix_LoadMUS_RW; needs mix_ok.
+  midi::music_init(mix_ok, options::Options.MusicVolume);
+  if (options::Options.Music)
+    midi::music_play();
+  else
+    midi::music_stop();
 
   if (pb::init() != 0) {
     log(RETRO_LOG_ERROR, "pb::init failed for %s\n", cfg.dat_path);
@@ -195,6 +202,16 @@ void game_export_save_ram() {
   if (!g_ready) return;
   high_score::flush_pending();
   save_ram_store(game_high_score_table());
+}
+
+void game_set_music_enabled(bool enabled) {
+  if (!g_ready) return;
+  if (static_cast<bool>(options::Options.Music) == enabled) return;
+  options::Options.Music = enabled;
+  if (enabled)
+    midi::music_play();
+  else
+    midi::music_stop();
 }
 
 void game_handle_input(const InputEvent* events, int count) {

@@ -165,7 +165,20 @@ struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
 struct SDL_Surface;
-typedef struct SDL_RWops SDL_RWops;
+
+// Minimal RWops used by midi.cpp (Mix_LoadMUS_RW).
+typedef struct SDL_RWops {
+  int kind;  // 0=file, 1=mem
+  void* handle;
+  const Uint8* base;
+  const Uint8* here;
+  const Uint8* stop;
+  int own_mem;  // unused; ownership stays with caller for FromMem
+} SDL_RWops;
+
+#define RW_SEEK_SET 0
+#define RW_SEEK_CUR 1
+#define RW_SEEK_END 2
 
 typedef struct SDL_RendererInfo {
   const char* name;

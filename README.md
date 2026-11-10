@@ -10,8 +10,9 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-**MVP (0.6.0):** RGB565 video, OnionOS-compatible input, SFX mixer, and high scores in
-libretro SAVE_RAM. Optional MIDI music is Phase 7; save states are Phase 8.
+**MVP + music hook (0.7.0):** RGB565 video, OnionOS input, SFX, SAVE_RAM high scores.
+Optional MIDI via `-DSCP_ENABLE_MUSIC=ON` and a user-provided `.sf2` (`docs/MUSIC.md`).
+Save states remain Phase 8.
 
 ## Quick start (developers)
 

@@ -94,7 +94,7 @@ void retro_set_environment(retro_environment_t cb) {
 
   // Labels kept short for MinUI; values match docs/INPUT_MAPPING.md.
   static const struct retro_variable vars[] = {
-    {"scp_music", "Background Music (needs Phase 7); disabled|enabled"},
+    {"scp_music", "Background Music; disabled|enabled"},
     {"scp_plunger_mode", "Plunger Mode; hold-release|tap"},
     {"scp_nudge", "Allow Nudge; enabled|disabled"},
     {"scp_show_fps", "Show FPS overlay; disabled|enabled"},
@@ -114,7 +114,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.6.0";
+  info->library_version = "0.7.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
@@ -136,7 +136,7 @@ void retro_init(void) {
   show_error = false;
   error_message.clear();
   scp::save_ram_clear();
-  scp::log(RETRO_LOG_INFO, "SpaceCadetPinball libretro %s\n", "0.6.0");
+  scp::log(RETRO_LOG_INFO, "SpaceCadetPinball libretro %s\n", "0.7.0");
 }
 
 void retro_deinit(void) {
@@ -172,6 +172,7 @@ bool retro_load_game(const struct retro_game_info* game) {
   cfg.dat_path = path;
   cfg.system_dir = get_dir(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY);
   cfg.save_dir = get_dir(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY);
+  cfg.music_enabled = read_bool_option("scp_music", "enabled");
 
   if (!scp::game_init(cfg)) {
     show_error = true;
@@ -196,8 +197,10 @@ void retro_unload_game(void) {
 
 void retro_run(void) {
   // Frontend typically fills SAVE_RAM after load_game; import once on first run.
-  if (scp::game_ready() && !show_error)
+  if (scp::game_ready() && !show_error) {
     scp::game_import_save_ram();
+    scp::game_set_music_enabled(read_bool_option("scp_music", "enabled"));
+  }
 
   scp::poll_input(input_poll_cb, input_state_cb, read_input_options());
   if (scp::game_ready() && !show_error)

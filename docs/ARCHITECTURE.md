@@ -31,7 +31,8 @@ in sync so flippers cannot stick. See `docs/INPUT_MAPPING.md`.
 
 Audio: upstream `Sound` / `loader` still load WAV paths beside the DAT. The `Mix_*`
 shim in `audio.cpp` decodes PCM to mono S16 @ 44100 Hz, plays on N channels, and
-`audio_mix_frame` sums with saturation (no heap on the hot path). Music remains Phase 7.
+`audio_mix_frame` sums with saturation (no heap on the hot path). Optional music
+(`SCP_ENABLE_MUSIC`) uses TinySoundFont + TinyMidiLoader; see `docs/MUSIC.md`.
 
 Persistence: `persist.cpp` exposes a 192-byte `SAVE_RAM` blob (`SCPH` + version + five
 name/score entries + CRC32). After `load_game`, the first `retro_run` imports into

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0 — Phase 7 optional MIDI
+
+- TinySoundFont + TinyMidiLoader vendored under `third_party/tinysoundfont/`
+- CMake `SCP_ENABLE_MUSIC` (default OFF); user SF2 in `{system}/PINBALL/`
+- Mix music into SFX each frame; silent fallback without SF2/MID
+- Core option `scp_music`; see `docs/MUSIC.md`
+
 ## 0.6.0 — Phase 6 MVP
 
 - High scores in `RETRO_MEMORY_SAVE_RAM` (SCPH v1 + CRC32)
