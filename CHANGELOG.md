@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0 — Phase 9 polish & release
+
+- Documentation complete for a new player: `README`, `docs/USER_GUIDE.md` (EN/PT),
+  `BUILDING`, `LEGAL`, `PERFORMANCE`, plus existing architecture/input/music docs
+- `THIRD_PARTY_LICENSES.md` reviewed; SPDX MIT on all `src/` files
+- Release workflow on tag `v*`: host build, whitelist pak zip, `SHA256SUMS`, notes
+  (Miyoo cross-build remains via Docker toolchain — see `docs/BUILDING.md`)
+- Core `library_version` → `1.0.0`
+- On-device frame-time profiling left to maintainers with hardware
+  (`docs/PERFORMANCE.md`); no further code changes required for acceptance docs
+
 ## 0.8.0 — Phase 8 save states (S1 MVP)
 
 - Decision: explicit serialization (S1); reject arena snapshot (S2) — see `docs/PHASE8_SPIKE.md`

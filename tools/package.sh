@@ -79,3 +79,5 @@ PY
 )
 
 echo "Packaged $DIST/${PAK_NAME}.zip"
+echo "Checksums: $DIST/SHA256SUMS"
+ls -la "$DIST/${PAK_NAME}.zip" "$DIST/SHA256SUMS"

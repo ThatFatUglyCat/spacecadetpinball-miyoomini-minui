@@ -14,6 +14,7 @@ Install
    (core must be built with SCP_ENABLE_MUSIC=ON; see docs/MUSIC.md).
 4. Refresh ROMs in MinUI and launch PINBALL.DAT.
 5. High scores persist via MinUI/libretro SAVE_RAM (.srm) automatically.
+   MinUI quicksave/auto-resume uses core save states (timers cleared on load).
 
 Controls (defaults)
 -------------------

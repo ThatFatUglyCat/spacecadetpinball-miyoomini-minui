@@ -4,37 +4,44 @@ Unofficial [libretro](https://docs.libretro.com) core that runs the
 [SpaceCadetPinball](https://github.com/k4zmu2a/SpaceCadetPinball) decompilation
 under [MinUI](https://github.com/shauninman/MinUI) on the Miyoo Mini / Mini Plus.
 
-**This project does not distribute any game data.** You must provide your own
-legitimately obtained `PINBALL.DAT`. The project is not affiliated with
-Microsoft, Maxis, Cinematronics, or Shaun Inman.
+**This project does not distribute any game data.** Provide your own legitimately
+obtained `PINBALL.DAT`. Not affiliated with Microsoft, Maxis, Cinematronics, or
+Shaun Inman.
 
 ## Status
 
-**0.8.0:** RGB565 video, OnionOS input, SFX, SAVE_RAM high scores, optional MIDI
-(`docs/MUSIC.md`), and S1 MVP save states for MinUI quicksave/auto-resume
+**v1.0.0** — playable MinUI pak: RGB565 video, OnionOS-compatible controls, SFX,
+SAVE_RAM high scores, optional MIDI (`docs/MUSIC.md`), S1 MVP save states
 (`docs/PHASE8_SPIKE.md`).
 
-## Quick start (developers)
+## Players
+
+See **[docs/USER_GUIDE.md](docs/USER_GUIDE.md)** (EN/PT) for SD layout, controls,
+saves, and troubleshooting.
+
+## Developers
 
 ```bash
 git clone --recurse-submodules <repo-url>
 cd spacecadetpinball-miyoomini-minui
-cmake -S . -B build/host -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake -S . -B build/host -DCMAKE_BUILD_TYPE=RelWithDebInfo -DSCP_BUILD_TESTS=ON
 cmake --build build/host -j
 ctest --test-dir build/host --output-on-failure
+./tools/check-no-proprietary.sh
 ./tools/package.sh build/host
 ```
 
-See [docs/BUILDING.md](docs/BUILDING.md) and [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+More: [docs/BUILDING.md](docs/BUILDING.md) · [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) ·
+[CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Controls
 
-Defaults follow the Miyoo Mini OnionOS port control scheme (shoulders = flippers,
-A/B = plunger, D-pad nudges / high scores, Start = pause, Select = new game).
-Details: [docs/INPUT_MAPPING.md](docs/INPUT_MAPPING.md).
+Shoulders = flippers, A/B = plunger, D-pad = nudges / high scores, Start = pause,
+Select = new game. Details: [docs/INPUT_MAPPING.md](docs/INPUT_MAPPING.md).
 
 ## License
 
-MIT for new code — see [LICENSE](LICENSE) and [NOTICE.md](NOTICE.md).
-Upstream SpaceCadetPinball is also MIT. Game assets remain proprietary to their
-owners and are never included here.
+MIT for new code — [LICENSE](LICENSE), [NOTICE.md](NOTICE.md),
+[docs/LEGAL.md](docs/LEGAL.md), [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+Upstream SpaceCadetPinball is MIT. Game assets remain proprietary and are never
+included here.

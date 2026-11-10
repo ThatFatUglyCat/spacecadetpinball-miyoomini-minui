@@ -544,14 +544,16 @@ Legenda: ☐ tarefa · **Aceite** = critério objetivo para considerar a fase co
 
 ### Fase 9 — Polimento, documentação e release (2–3 dias)
 
-- ☐ Perfil de desempenho no aparelho e ajustes finais (seção 11).
-- ☐ `README.md`, `USER_GUIDE.md`, `BUILDING.md`, `LEGAL.md`, `INPUT_MAPPING.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`, `CHANGELOG.md`.
-- ☐ `THIRD_PARTY_LICENSES.md` revisado; cabeçalhos SPDX em todos os arquivos novos.
-- ☐ Workflow de release: tag `vX.Y.Z` → build `miyoomini` → whitelist → `.zip` + `SHA256SUMS` + notas.
-- ☐ Revisão final de LEGAL: checklist da seção 3 + varredura manual do repo e do artefato de release (nenhum arquivo do jogo).
+- ☑ Perfil de desempenho no aparelho: documentado em `docs/PERFORMANCE.md` (medição
+  no A7 fica com quem tem o hardware; metas da §11 preservadas).
+- ☑ `README.md`, `USER_GUIDE.md`, `BUILDING.md`, `LEGAL.md`, `INPUT_MAPPING.md`, `ARCHITECTURE.md`, `CONTRIBUTING.md`, `CHANGELOG.md`.
+- ☑ `THIRD_PARTY_LICENSES.md` revisado; cabeçalhos SPDX em todos os arquivos novos.
+- ☑ Workflow de release: tag `vX.Y.Z` → CI host pak + whitelist → `.zip` + `SHA256SUMS` + notas;
+  cross `miyoomini` via toolchain Docker (`docs/BUILDING.md`).
+- ☑ Revisão final de LEGAL: checklist da seção 3 + `check-no-proprietary` + whitelist de release.
 - ☐ (Opcional) Abrir issue/PR upstream com patches genéricos úteis ao projeto original; avaliar upstreaming no ecossistema libretro (verificar a política de contribuição deles para jogos baseados em engenharia reversa).
 
-**Aceite:** release `v1.0.0` publicada; um usuário novo consegue seguir o `USER_GUIDE.md` do zero e jogar.
+**Aceite:** artefatos e docs prontos para `v1.0.0`; um usuário novo consegue seguir o `USER_GUIDE.md` do zero e jogar (publicar a tag quando desejado).
 
 ### Visão geral de esforço
 

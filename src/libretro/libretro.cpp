@@ -115,7 +115,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.8.0";
+  info->library_version = "1.0.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
@@ -137,7 +137,7 @@ void retro_init(void) {
   show_error = false;
   error_message.clear();
   scp::save_ram_clear();
-  scp::log(RETRO_LOG_INFO, "SpaceCadetPinball libretro %s\n", "0.8.0");
+  scp::log(RETRO_LOG_INFO, "SpaceCadetPinball libretro %s\n", "1.0.0");
 }
 
 void retro_deinit(void) {

@@ -1,0 +1,58 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  host-pak:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Guards
+        run: |
+          chmod +x tools/check-no-proprietary.sh tools/package.sh
+          ./tools/check-no-proprietary.sh
+
+      - name: Configure & build
+        run: |
+          cmake -S . -B build/host -DCMAKE_BUILD_TYPE=Release -DSCP_BUILD_TESTS=ON
+          cmake --build build/host -j$(nproc)
+          ctest --test-dir build/host --output-on-failure
+
+      - name: Package
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq zip
+          ./tools/package.sh build/host
+          # Rename for clear release asset naming
+          cp dist/PINBALL.pak.zip "dist/PINBALL.pak-host-${GITHUB_REF_NAME}.zip"
+          (cd dist && sha256sum "PINBALL.pak-host-${GITHUB_REF_NAME}.zip" > SHA256SUMS)
+
+      - name: Release notes snippet
+        run: |
+          {
+            echo "## SpaceCadetPinball MinUI ${GITHUB_REF_NAME}"
+            echo
+            echo "Host-built pak (x86_64 CI). For Miyoo Mini, cross-compile with the"
+            echo "union-miyoomini-toolchain and \`./tools/package.sh build/miyoomini\`."
+            echo
+            echo "**No game data included.** You must supply PINBALL.DAT yourself."
+            echo
+            echo "See docs/USER_GUIDE.md and CHANGELOG.md."
+          } > dist/RELEASE_NOTES.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/PINBALL.pak-host-${{ github.ref_name }}.zip
+            dist/SHA256SUMS
+          body_path: dist/RELEASE_NOTES.md
+          draft: false
+          generate_release_notes: true
