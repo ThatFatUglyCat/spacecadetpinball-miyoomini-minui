@@ -10,9 +10,9 @@ Microsoft, Maxis, Cinematronics, or Shaun Inman.
 
 ## Status
 
-**MVP + music hook (0.7.0):** RGB565 video, OnionOS input, SFX, SAVE_RAM high scores.
-Optional MIDI via `-DSCP_ENABLE_MUSIC=ON` and a user-provided `.sf2` (`docs/MUSIC.md`).
-Save states remain Phase 8.
+**0.8.0:** RGB565 video, OnionOS input, SFX, SAVE_RAM high scores, optional MIDI
+(`docs/MUSIC.md`), and S1 MVP save states for MinUI quicksave/auto-resume
+(`docs/PHASE8_SPIKE.md`).
 
 ## Quick start (developers)
 

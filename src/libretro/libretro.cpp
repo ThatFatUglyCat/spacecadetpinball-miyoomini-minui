@@ -8,6 +8,7 @@
 #include "input.h"
 #include "log.h"
 #include "persist.h"
+#include "state.h"
 #include "video.h"
 
 #include <cstdio>
@@ -114,7 +115,7 @@ unsigned retro_api_version(void) { return RETRO_API_VERSION; }
 void retro_get_system_info(struct retro_system_info* info) {
   std::memset(info, 0, sizeof(*info));
   info->library_name = "SpaceCadetPinball";
-  info->library_version = "0.7.0";
+  info->library_version = "0.8.0";
   info->need_fullpath = true;
   info->valid_extensions = "dat";
   info->block_extract = true;
@@ -136,7 +137,7 @@ void retro_init(void) {
   show_error = false;
   error_message.clear();
   scp::save_ram_clear();
-  scp::log(RETRO_LOG_INFO, "SpaceCadetPinball libretro %s\n", "0.7.0");
+  scp::log(RETRO_LOG_INFO, "SpaceCadetPinball libretro %s\n", "0.8.0");
 }
 
 void retro_deinit(void) {
@@ -227,9 +228,17 @@ void retro_reset(void) {
 void retro_set_controller_port_device(unsigned, unsigned) {}
 unsigned retro_get_region(void) { return RETRO_REGION_NTSC; }
 bool retro_load_game_special(unsigned, const struct retro_game_info*, size_t) { return false; }
-size_t retro_serialize_size(void) { return 0; }
-bool retro_serialize(void*, size_t) { return false; }
-bool retro_unserialize(const void*, size_t) { return false; }
+size_t retro_serialize_size(void) {
+  return scp::state_serialize_size();
+}
+
+bool retro_serialize(void* data, size_t size) {
+  return scp::state_serialize(data, size);
+}
+
+bool retro_unserialize(const void* data, size_t size) {
+  return scp::state_unserialize(data, size);
+}
 void* retro_get_memory_data(unsigned id) {
   if (id == RETRO_MEMORY_SAVE_RAM) return scp::save_ram_data();
   return nullptr;

@@ -38,6 +38,9 @@ Persistence: `persist.cpp` exposes a 192-byte `SAVE_RAM` blob (`SCPH` + version 
 name/score entries + CRC32). After `load_game`, the first `retro_run` imports into
 `high_score::highscore_table`; each frame re-exports so the frontend can write `.srm`.
 
+Save states: `state.cpp` implements S1 MVP (`SCPS` + version + build id + CRC). See
+`docs/PHASE8_SPIKE.md`. Size is a fixed 48 KiB ceiling for `retro_serialize_size`.
+
 ## Upstream pin
 
 See `docs/PHASE0_FINDINGS.md` for the tagged commit and Gate 1 decision

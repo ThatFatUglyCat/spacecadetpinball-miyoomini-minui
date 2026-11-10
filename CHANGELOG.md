@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 — Phase 8 save states (S1 MVP)
+
+- Decision: explicit serialization (S1); reject arena snapshot (S2) — see `docs/PHASE8_SPIKE.md`
+- `retro_serialize*` restores balls, flippers, plunger, scores, component flags, lights
+- Timers cleared on load; CRC + version gate; unit tests for header rejection
+
 ## 0.7.0 — Phase 7 optional MIDI
 
 - TinySoundFont + TinyMidiLoader vendored under `third_party/tinysoundfont/`
