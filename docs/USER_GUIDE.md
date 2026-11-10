@@ -7,8 +7,11 @@ This project does **not** ship game data.
 
 ### Install
 
-1. Download `PINBALL.pak.zip` from a [release](https://github.com/ThatFatUglyCat/spacecadetpinball-miyoomini-minui/releases)
+1. Download **`PINBALL.pak-miyoomini-*.zip`** from a
+   [release](https://github.com/ThatFatUglyCat/spacecadetpinball-miyoomini-minui/releases)
    and verify `SHA256SUMS` if provided.
+   Do **not** install `PINBALL.pak-host-*.zip` on the handheld — that build is
+   x86_64 for desktop RetroArch and fails with `wrong ELF class: ELFCLASS64`.
 2. Unzip so you have `PINBALL.pak/` with `launch.sh`, `default.cfg`, `README.txt`,
    and `spacecadetpinball_libretro.so`.
 3. Copy that folder to `Emus/miyoomini/` on the MinUI SD card.
@@ -51,13 +54,19 @@ Full map: [INPUT_MAPPING.md](INPUT_MAPPING.md).
 - Error screen / “DAT not found”: check the ROM path and that the file starts with
   the original DAT header (do not rename random files to `.dat`).
 - No sound: ensure WAVs sit next to `PINBALL.DAT`; press **X** if sound was toggled off.
+- Returns to the game list immediately / log shows `wrong ELF class: ELFCLASS64`:
+  you installed the **host** zip. Replace the `.so` with the **miyoomini** release asset.
 - Logs: `/.userdata/miyoomini/logs/PINBALL.txt`.
 
 ## Português
 
 ### Instalação
 
-1. Baixe `PINBALL.pak.zip` do release e confira o `SHA256SUMS` se existir.
+1. Baixe **`PINBALL.pak-miyoomini-*.zip`** do
+   [release](https://github.com/ThatFatUglyCat/spacecadetpinball-miyoomini-minui/releases)
+   e confira o `SHA256SUMS` se existir.
+   Não use `PINBALL.pak-host-*.zip` no aparelho — esse build é x86_64 (PC) e
+   falha com `wrong ELF class: ELFCLASS64`.
 2. Extraia a pasta `PINBALL.pak/` e copie para `Emus/miyoomini/` no cartão MinUI.
 3. Crie `Roms/Space Cadet Pinball (PINBALL)/`.
 4. Coloque o **seu** `PINBALL.DAT` legítimo nessa pasta, junto com os WAVs do jogo.
@@ -66,4 +75,5 @@ Full map: [INPUT_MAPPING.md](INPUT_MAPPING.md).
 Música opcional, controles e saves: veja as seções em inglês acima e
 [INPUT_MAPPING.md](INPUT_MAPPING.md) / [MUSIC.md](MUSIC.md).
 
-Log: `/.userdata/miyoomini/logs/PINBALL.txt`.
+Log: `/.userdata/miyoomini/logs/PINBALL.txt`. Se o log mostrar `wrong ELF class`,
+troque pelo zip **miyoomini** do release.

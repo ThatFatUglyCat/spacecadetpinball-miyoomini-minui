@@ -36,6 +36,9 @@ retroarch -L build/host/spacecadetpinball_libretro.so "$HOME/games/pinball/PINBA
 
 ## Cross-compile (Miyoo Mini)
 
+Tagged releases already publish `PINBALL.pak-miyoomini-*.zip` (ARM ELF32) via
+GitHub Actions. Use a local Docker build when iterating on the device binary:
+
 ```bash
 # inside the toolchain container (`make shell`), repo under ~/workspace
 cmake -S . -B build/miyoomini \
@@ -43,23 +46,27 @@ cmake -S . -B build/miyoomini \
   -DCMAKE_BUILD_TYPE=Release
 # optional: -DSCP_ENABLE_MUSIC=ON
 cmake --build build/miyoomini -j
+./tools/check-miyoomini-elf.sh build/miyoomini/spacecadetpinball_libretro.so
 ./tools/package.sh build/miyoomini
 ```
 
-Output: `dist/PINBALL.pak.zip` + `dist/SHA256SUMS` (whitelist only — never zip the tree).
+Output: `dist/PINBALL.pak.zip` (whitelist only — never zip the tree).
 
 ## Release checklist
 
 1. `CHANGELOG.md` updated; version in `retro_get_system_info` matches.
 2. `./tools/check-no-proprietary.sh` and host `ctest` green.
-3. Package host and/or miyoomini builds; confirm zip contains only
-   `launch.sh`, `default.cfg`, `README.txt`, `spacecadetpinball_libretro.so`.
-4. Tag `vX.Y.Z` and attach zip + SHA256SUMS + release notes (see `.github/workflows/release.yml`).
+3. Tag `vX.Y.Z` — `.github/workflows/release.yml` builds **both** host and
+   miyoomini paks, runs the ELF guard on the device `.so`, and uploads
+   `PINBALL.pak-miyoomini-*.zip`, `PINBALL.pak-host-*.zip`, and `SHA256SUMS`.
+4. Confirm each zip contains only `launch.sh`, `default.cfg`, `README.txt`,
+   `spacecadetpinball_libretro.so`.
 
 ## Guards
 
 ```bash
 ./tools/check-no-proprietary.sh
+./tools/check-miyoomini-elf.sh path/to/spacecadetpinball_libretro.so
 ./tools/sdl-inventory.sh   # inventory only; does not fail the build
 ```
 

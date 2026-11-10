@@ -1,12 +1,21 @@
 # Changelog
 
+## Unreleased
+
+- Release / CI publish **both** device and desktop paks on tag `v*`:
+  `PINBALL.pak-miyoomini-*.zip` (ARM ELF32 via pinned `union-miyoomini-toolchain`)
+  and `PINBALL.pak-host-*.zip` (x86_64), with a combined `SHA256SUMS`
+- `tools/check-miyoomini-elf.sh` rejects non-ARM32 cores and dynamic
+  `libstdc++` / `libgcc_s` before packaging
+- User guide points players at the **miyoomini** zip; host zip is for desktop only
+
 ## 1.0.0 — Phase 9 polish & release
 
 - Documentation complete for a new player: `README`, `docs/USER_GUIDE.md` (EN/PT),
   `BUILDING`, `LEGAL`, `PERFORMANCE`, plus existing architecture/input/music docs
 - `THIRD_PARTY_LICENSES.md` reviewed; SPDX MIT on all `src/` files
 - Release workflow on tag `v*`: host build, whitelist pak zip, `SHA256SUMS`, notes
-  (Miyoo cross-build remains via Docker toolchain — see `docs/BUILDING.md`)
+  (Miyoo cross-build remained manual in this tag — see later Unreleased notes)
 - Core `library_version` → `1.0.0`
 - On-device frame-time profiling left to maintainers with hardware
   (`docs/PERFORMANCE.md`); no further code changes required for acceptance docs

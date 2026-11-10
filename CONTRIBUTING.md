@@ -11,8 +11,9 @@
   - host build + `ctest`
   - keep `THIRD_PARTY_LICENSES.md` accurate if you vendor anything
 - Prefer small, focused patches. Describe the *why* in the PR body.
-- Releases: tag `vX.Y.Z` triggers `.github/workflows/release.yml` (host pak).
-  Cross-build the Miyoo `.so` with the Docker toolchain before attaching a
-  device pak (`docs/BUILDING.md`).
+- Releases: tag `vX.Y.Z` triggers `.github/workflows/release.yml`, which builds
+  and uploads **both** `PINBALL.pak-miyoomini-*.zip` and `PINBALL.pak-host-*.zip`
+  plus `SHA256SUMS`. Local Docker cross-build remains documented in
+  `docs/BUILDING.md` for iteration.
 
 Checklist for the PR template is under `.github/PULL_REQUEST_TEMPLATE.md`.

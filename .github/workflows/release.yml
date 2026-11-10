@@ -7,6 +7,11 @@ on:
 permissions:
   contents: write
 
+env:
+  # Pin union-miyoomini-toolchain (Dockerfile on debian/eol:buster-slim).
+  TOOLCHAIN_REPO: shauninman/union-miyoomini-toolchain
+  TOOLCHAIN_REF: cfcae3083679de59d6600d4ba05676c654b6d24e
+
 jobs:
   host-pak:
     runs-on: ubuntu-latest
@@ -30,27 +35,109 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq zip
           ./tools/package.sh build/host
-          # Rename for clear release asset naming
           cp dist/PINBALL.pak.zip "dist/PINBALL.pak-host-${GITHUB_REF_NAME}.zip"
-          (cd dist && sha256sum "PINBALL.pak-host-${GITHUB_REF_NAME}.zip" > SHA256SUMS)
 
-      - name: Release notes snippet
+      - name: Upload host pak
+        uses: actions/upload-artifact@v4
+        with:
+          name: pak-host
+          path: dist/PINBALL.pak-host-${{ github.ref_name }}.zip
+
+  miyoomini-pak:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          path: project
+
+      - name: Checkout Miyoo Mini toolchain
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TOOLCHAIN_REPO }}
+          ref: ${{ env.TOOLCHAIN_REF }}
+          path: toolchain
+
+      - name: Build toolchain image
+        run: docker build -t miyoomini-toolchain ./toolchain
+
+      - name: Cross-compile, ELF check, package
+        run: |
+          chmod +x project/tools/package.sh project/tools/check-miyoomini-elf.sh
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE/project:/root/workspace" \
+            miyoomini-toolchain \
+            /bin/bash -lc '
+              set -euo pipefail
+              # .bashrc is not sourced for non-interactive shells.
+              source /root/setup-env.sh
+              cd /root/workspace
+              cmake -S . -B build/miyoomini \
+                -DCMAKE_TOOLCHAIN_FILE=cmake/miyoomini.toolchain.cmake \
+                -DCMAKE_BUILD_TYPE=Release
+              cmake --build build/miyoomini -j"$(nproc)"
+              SO=""
+              for cand in build/miyoomini/spacecadetpinball_libretro.so \
+                          build/miyoomini/libspacecadetpinball_libretro.so; do
+                if [[ -f "$cand" ]]; then SO="$cand"; break; fi
+              done
+              if [[ -z "$SO" ]]; then
+                echo "ERROR: core .so not found under build/miyoomini" >&2
+                exit 1
+              fi
+              ./tools/check-miyoomini-elf.sh "$SO"
+              ./tools/package.sh build/miyoomini
+            '
+          cp project/dist/PINBALL.pak.zip \
+            "project/dist/PINBALL.pak-miyoomini-${GITHUB_REF_NAME}.zip"
+
+      - name: Upload miyoomini pak
+        uses: actions/upload-artifact@v4
+        with:
+          name: pak-miyoomini
+          path: project/dist/PINBALL.pak-miyoomini-${{ github.ref_name }}.zip
+
+  publish:
+    needs: [host-pak, miyoomini-pak]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: SHA256SUMS
+        run: |
+          cd dist
+          sha256sum PINBALL.pak-host-${GITHUB_REF_NAME}.zip \
+                    PINBALL.pak-miyoomini-${GITHUB_REF_NAME}.zip > SHA256SUMS
+          cat SHA256SUMS
+          ls -la
+
+      - name: Release notes
         run: |
           {
             echo "## SpaceCadetPinball MinUI ${GITHUB_REF_NAME}"
             echo
-            echo "Host-built pak (x86_64 CI). For Miyoo Mini, cross-compile with the"
-            echo "union-miyoomini-toolchain and \`./tools/package.sh build/miyoomini\`."
+            echo "### Download which zip?"
             echo
-            echo "**No game data included.** You must supply PINBALL.DAT yourself."
+            echo "| Asset | Use on |"
+            echo "|---|---|"
+            echo "| \`PINBALL.pak-miyoomini-${GITHUB_REF_NAME}.zip\` | **Miyoo Mini / Mini Plus / Mini V4** (MinUI \`Emus/miyoomini/\`) |"
+            echo "| \`PINBALL.pak-host-${GITHUB_REF_NAME}.zip\` | Desktop RetroArch (x86_64). **Not** for the handheld — wrong ELF class. |"
             echo
-            echo "See docs/USER_GUIDE.md and CHANGELOG.md."
+            echo "**No game data included.** Supply your own legitimate \`PINBALL.DAT\` and WAVs."
+            echo
+            echo "See \`docs/USER_GUIDE.md\` and \`CHANGELOG.md\`."
           } > dist/RELEASE_NOTES.md
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
+            dist/PINBALL.pak-miyoomini-${{ github.ref_name }}.zip
             dist/PINBALL.pak-host-${{ github.ref_name }}.zip
             dist/SHA256SUMS
           body_path: dist/RELEASE_NOTES.md

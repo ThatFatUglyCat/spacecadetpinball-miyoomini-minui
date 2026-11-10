@@ -16,7 +16,9 @@ SAVE_RAM high scores, optional MIDI (`docs/MUSIC.md`), S1 MVP save states
 
 ## Players
 
-See **[docs/USER_GUIDE.md](docs/USER_GUIDE.md)** (EN/PT) for SD layout, controls,
+Download **`PINBALL.pak-miyoomini-*.zip`** from Releases for the handheld
+(`PINBALL.pak-host-*.zip` is desktop-only). See
+**[docs/USER_GUIDE.md](docs/USER_GUIDE.md)** (EN/PT) for SD layout, controls,
 saves, and troubleshooting.
 
 ## Developers
